@@ -1,0 +1,18 @@
+{
+  "networks_and_azs":{
+    "networks_and_azs": {
+      "singleton_availability_zone": {
+        "name": "{{az1}}"
+      },
+      "other_availability_zones": [
+        { "name": "{{az1}}" }
+      ],
+      "network": {
+        "name": "{{SPLUNK_NETWORK}}"
+      }
+    }
+  },
+  "jobs": {
+      "cf-splunk": {"instance_type": {"id": "automatic"},"instances": 3,"persistent_disk": {"size_mb": "automatic"} }
+  }
+}

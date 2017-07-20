@@ -1,0 +1,7 @@
+echo "{
+  \"ntp_servers_string\": \"${NTP_SERVERS}\",
+  \"resurrector_enabled\": ${RESURRECTOR_ENABLED},
+  \"post_deploy_enabled\": ${POST_DEPLOY_ENABLED},
+  \"bosh_recreate_on_next_deploy\": ${BOSH_RECREATE_ON_NEXT_DEPLOY},
+  \"retry_bosh_deploys\": ${RETRY_BOSH_DEPLOYS}
+}"

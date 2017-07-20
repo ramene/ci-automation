@@ -1,0 +1,132 @@
+groups:
+- name: all
+  jobs:
+  - upload-products
+  - stage-products
+  - apply-changes
+- name: upload-products
+  jobs:
+  - upload-products
+- name: stage
+  jobs:
+  - stage-products
+- name: deploy
+  jobs:
+  - apply-changes
+
+resource_types:
+- name: mypivnet
+  type: docker-image
+  source:
+    repository: rsamban/pivnet
+- name: myscp
+  type: docker-image
+  source:
+    repository: rsamban/scp
+    tag: "1.0"
+
+resources:
+#- name: pcf-automation
+#  type: git
+#  source:
+#    branch: master
+#    uri: git@192.168.61.5:root/pcf-automation.git
+#    private_key: GIT_PRIVATE_KEY
+- name: pcf-automation
+  type: myscp
+  source:
+    host: 172.28.51.2
+    username: ecs
+    private_key: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEpgIBAAKCAQEAxz1AKrgBQQGMmBZj+1WPp/RbZt2A0PJnSFSgzPfYUu6S2/0X
+      Z3aUuZ8aATV+LTQpli3qPXyVpktwh5cewpO7nfbfDb707ntw+U/u8ZfeIEolAPGx
+      JGhOdMWxS7K5yLnYr6t+p8+6OhNx1qmD1tN4IctEjXy2bLGivka2p77fWB2Q0dWD
+      tq8ilqBC7113TtKN/5sNXiUSgwjVqspGAb1Eh3iOhFNq6ou9MoDCXNQhobJ2ZlDv
+      A4gsobao3EgqcALAudj4f1PscDN5UrDNP8sLf3RrPUx+Xgbu4ep/56VWyW3B71m5
+      /RLHAIfI8Keeyj5EE9r/j3kn50H8BSMKDwDNAQIDAQABAoIBAQC4tepFMG3JLHyB
+      i1CJ9BrIpNwQE46XKAPkpMCnBaeByzhPxuXpv5/GLuBW+pbNpaxgVJTzCAtdLldW
+      /R1BWuD3Y6YLAlvktIBaQmbNh/Qgj1ya8Xc+v4zs6VKjUUC3/MQMqLs1LHoD2X8S
+      efmGMmsPOXmGinY9crnkGX7BKU26S5nrfI5Y0QpnPZLdLAYjA8K/v6XHHO3vf1UQ
+      HIdkpSvb0SmwybGP7Sure5pKjLx7VOBAyKFPUjGfoXxVjOEb8w9iNBtyaf79v5/I
+      x7XgKXozjbRTgcLbWy0P4B3/G0NxMqzifdNjAJUjntIGk3tqHhmaA4w9/irl8DOl
+      0gqkI/E5AoGBAPk3snaBzZ2jyedWVUbTuWkWcumL1MYKStxKULvNodevv+p2WKK3
+      lt2rKSHpY8bZH30Izp5o1XQyYTvSTHFvd7L6QnAFom2B/gzvMrr263r1m4fQJbRV
+      WIzvSH5HVFK9p5yD+8yJVsBxI0LA4CnLpoFV0Fahl6kt3RTQU3E+BsjbAoGBAMyp
+      WpXcAVnV5CB66R0tzq9xNP4vFQcxSQgzutMvCkqMrx7cEeDs0zN5dTbnWKDtsnvh
+      0vfTzyProBrjtAygfjJ1fh82jORZWGnq+TO/kYwND/4CD/wK7lc/6SWFAhIO1Ryo
+      sdfGUWZY+NsBc0OfhdrTbJiOyCbSsgcTnmhG2WpTAoGBANEADbFmwDowrtVMSK3i
+      R37C7dHAi8sdvJQr2rL1C4IniMonP8QONP5nWVJwOVX8pnSkWyrr/f65dWPGxIbp
+      FThKukbZ4tL1jknom+HBy8/NhAaM3+HxJRbkYSZNyYCuPo96/EMW9mLjPs/vks5a
+      VKPohJTyZY7iwKKA50lz3Bq7AoGBALRppfztEBPNRWiMcOrT8psdxIU9o9/PRn4A
+      e/SmRwAovEcL4IbSvetmajmX/rz+TJSAIaVuBe+4Sk7p51IuOJDqmd+SCulRCWt1
+      Q3CmsvsumKZl0wlv6WLoZ/I3KfgZMywsWXnIzQDX9ae5w44dFbYtIlHpq+7tVRp/
+      5OgvbIEZAoGBAOShoSE7HtRllTUXXnw0+L82i2U+7GM3vHCab9uf2j1M7Us29FDL
+      OfID+0ZHr0bEOT8WVCKZ9wmYM/gaXZR91GpuHZBcN+Fdu70I0R4z58gXivIP5naF
+      AjSicmvQV2E5Ws6qX5EjXPeAo9tbYUlP5KEucmSkCW54PguSluL/bUWH
+      -----END RSA PRIVATE KEY-----
+    source_dir: pcf-automation
+
+- name: pcf-products
+  type: mypivnet  
+  source:
+    iaas: vSphere
+    api_token: wsCnZvAXDzzgJNVa85PC
+
+jobs:
+
+###########################
+## Job - Upload Products     ##
+###########################
+- name: upload-products
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: p-redis
+        product_versions:
+        - product_version: 1.7.3
+  - task: upload-products
+    file: pcf-automation/pcf-opsman/upgrade-pcf/ci/tasks/upload-products.yml
+    params:
+      ERT_DOMAIN: lab04.den.ecsteam.io
+      OPSMAN_HOST: 172.28.61.5
+      OPSMAN_USER: admin
+      OPSMAN_PASSWORD: welcome1
+
+
+###########################
+## Job - Trigger product staging     ##
+###########################
+- name: stage-products
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: stage-products
+    file: pcf-automation/pcf-opsman/upgrade-pcf/ci/tasks/stage-products.yml
+    params:
+      ERT_DOMAIN: lab04.den.ecsteam.io
+      OPSMAN_HOST: 172.28.61.5
+      OPSMAN_USER: admin
+      OPSMAN_PASSWORD: welcome1
+
+###########################
+## Job - Deploy ERT      ##
+###########################
+- name: apply-changes
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: apply-changes
+    file: pcf-automation/pcf-opsman/upgrade-pcf/ci/tasks/apply-changes.yml
+    params:
+      ERT_DOMAIN: lab04.den.ecsteam.io
+      OPSMAN_HOST: 172.28.61.5
+      OPSMAN_USER: admin
+      OPSMAN_PASSWORD: welcome1
+

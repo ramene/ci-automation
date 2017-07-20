@@ -1,0 +1,12 @@
+echo "{
+  \"subscription_id\": \"${SUBSCRIPTION_ID}\",
+  \"tenant_id\": \"${TENANT_ID}\",
+  \"client_id\": \"${APPLICATION_ID}\",
+  \"client_secret\": \"${CLIENT_SECRET}\",
+  \"resource_group_name\": \"${PCF_RESOURCE_GROUP}\",
+  \"bosh_storage_account_name\": \"${BOSH_STORAGE_NAME}${ORG}\",
+  \"deployments_storage_account_name\": \"*${DEPLOYMENT_STORAGE_NAME}${ORG}*\",
+  \"default_security_group\": \"${PCF_NSG}\",
+  \"ssh_public_key\": \"$(echo "${BOSH_PUBLIC_KEY}")\",
+  \"ssh_private_key\": \"$(echo "${BOSH_PRIVATE_KEY}" | awk -F':' '{print $1 "\\n"}' | tr -d '\n')\"
+}"

@@ -1,0 +1,35 @@
+echo "{
+    \".properties.environment\": {
+      \"value\": \"${AZURE_SB_ENVIRONMENT}\"
+    },
+    \".properties.subscription_id\": {
+      \"value\": \"${AZURE_SB_SUBSCRIPTION_ID}\"
+    },
+    \".properties.tenant_id\": {
+      \"value\": \"${AZURE_SB_TENANT_ID}\"
+    },
+    \".properties.client_id\": {
+      \"value\": \"${AZURE_SB_CLIENT_ID}\"
+    },
+    \".properties.client_secret\": {
+      \"value\": {\"secret\": \"${AZURE_SB_CLIENT_SECRET}\"}
+    },
+    \".properties.azure_broker_database_provider\": {
+      \"value\": \"sqlserver\"
+    },
+    \".properties.azure_broker_database_server\": {
+      \"value\": \"${AZURE_SB_DB_SERVER}.database.windows.net\"
+    },
+    \".properties.azure_broker_database_user\": {
+      \"value\": \"${AZURE_SB_SQL_SERVER_ADMIN_USER}\"
+    },
+    \".properties.azure_broker_database_password\": {
+      \"value\": {\"secret\": \"${AZURE_SB_SQL_SERVER_ADMIN_PASSWORD}\"}
+    },
+    \".properties.azure_broker_database_name\": {
+      \"value\": \"${AZURE_SB_DB_NAME}\"
+    },
+    \".properties.azure_broker_database_encryption_key\": {
+      \"value\": {\"secret\": \"${AZURE_SB_DATABASE_ENCRYPTION_KEY}\"}
+    }
+}"

@@ -1,0 +1,490 @@
+# pipeline to install pcf on azure
+# Installs reference architecture as defined in http://docs.pivotal.io/pivotalcf/1-9/refarch/azure/azure_ref_arch.html#multiple_resource_groups
+groups:
+- name: all
+  jobs:
+  - 1.prepare-azure
+  - 1.1.dns-create
+  - 2.create-opsman
+  - 3.config-opsman
+  - 4.config-director-azure
+  - 5.upload-ert
+  - 5.1.upload-azure-sb
+  - 5.2.upload-hm-forwarder
+  - 6.configure-ert
+  - prepare-azure-sb
+  - 6.1.configure-azure-sb
+  - 6.2.configure-hm-forwarder
+  - 7.apply-changes
+  - destroy-azure
+- name: 1.prepare-azure
+  jobs:
+  - 1.prepare-azure
+  - 1.1.dns-create
+- name: 2.create & 3.config-opsman
+  jobs:
+  - 2.create-opsman
+  - 3.config-opsman
+- name: 4.config-director-azure
+  jobs:
+  - 4.config-director-azure
+- name: 5.upload-products
+  jobs:
+  - 5.upload-ert
+  - 5.1.upload-azure-sb
+  - 5.2.upload-hm-forwarder
+- name: 6.configure-products
+  jobs:
+  - 6.configure-ert
+  - prepare-azure-sb
+  - 6.1.configure-azure-sb
+  - 6.2.configure-hm-forwarder
+- name: 7.apply-changes
+  jobs:
+  - 7.apply-changes
+
+resource_types:
+- name: mypivnet
+  type: docker-image
+  source:
+    repository: rsamban/pivnet
+resources:
+- name: pcf-automation
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:ECSTeam/pcf-automation.git
+    private_key: {{GIT_PRIVATE_KEY}}
+
+- name: pcf-products
+  type: mypivnet  
+  source:
+    iaas: {{IAAS}}
+    api_token: {{PIVNET_TOKEN}}
+
+- name: azure-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-azure-hyperv-ubuntu-trusty-go_agent
+
+jobs:
+- name: 1.prepare-azure
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: prepare-azure
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/azure/ra_multirg/prepare-azure.yml
+    params:
+      ORG: {{ORG}}
+      AZURE_SP_CI_USER: {{AZURE_SP_CI_USER}}
+      AZURE_SP_CI_PASSWORD: {{AZURE_SP_CI_PASSWORD}}
+      TENANT_ID: {{TENANT_ID}}
+      SUBSCRIPTION_ID: {{SUBSCRIPTION_ID}}
+      AZURE_LOCATION: {{AZURE_LOCATION}}
+      PCF_RESOURCE_GROUP: {{PCF_RESOURCE_GROUP}}
+      NETWORK_RESOURCE_GROUP: {{NETWORK_RESOURCE_GROUP}}
+      SERVICE_PRINCIPAL_NAME: {{SERVICE_PRINCIPAL_NAME}}
+      CLIENT_SECRET: {{CLIENT_SECRET}}
+      NET_RG_READ_ONLY_ROLE_NAME: {{NET_RG_READ_ONLY_ROLE_NAME}}
+      BOSH_SP_ROLE_DEF_FILE_NAME: {{BOSH_SP_ROLE_DEF_FILE_NAME}}
+      BOSH_STORAGE_NAME: {{BOSH_STORAGE_NAME}}
+      DEPLOYMENT_STORAGE_NAME: {{DEPLOYMENT_STORAGE_NAME}}
+      DEPLOYMENT_STORAGE_ACCOUNT_COUNT: {{DEPLOYMENT_STORAGE_ACCOUNT_COUNT}}
+      VNET_NAME: {{VNET_NAME}}
+      VNET_CIDR: {{VNET_CIDR}}
+      NETWORKS_DNS: {{NETWORKS_DNS}}
+      INFRA_SUBNET_NAME: {{INFRA_SUBNET_NAME}}
+      INFRA_NETWORK_CIDR: {{INFRA_NETWORK_CIDR}}
+      PCF_SUBNET_NAME: {{PCF_SUBNET_NAME}}
+      PCF_NETWORK_CIDR: {{PCF_NETWORK_CIDR}}
+      SERVICES_SUBNET_NAME: {{SERVICES_SUBNET_NAME}}
+      SERVICES_NETWORK_CIDR: {{SERVICES_NETWORK_CIDR}}
+      DYNAMIC_SERVICES_SUBNET_NAME: {{DYNAMIC_SERVICES_SUBNET_NAME}}
+      DYNAMIC_SERVICES_NETWORK_CIDR: {{DYNAMIC_SERVICES_NETWORK_CIDR}}
+      OPSMGR_NSG: {{OPSMGR_NSG}}
+      PCF_NSG: {{PCF_NSG}}
+      ALB_NAME: {{ALB_NAME}}
+      ALB_PIP_NAME: {{ALB_PIP_NAME}}
+- name: 2.create-opsman
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [1.prepare-azure,1.1.dns-create]
+      trigger: true
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: ops-manager
+        product_versions:
+        - product_version: {{OPSMAN_VERSION}}
+  - task: create-opsman
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/azure/ra_multirg/create-opsman-azure.yml
+    params:
+      IAAS: {{IAAS}}
+      ORG: {{ORG}}
+      AZURE_SP_CI_USER: {{AZURE_SP_CI_USER}}
+      AZURE_SP_CI_PASSWORD: {{AZURE_SP_CI_PASSWORD}}
+      TENANT_ID: {{TENANT_ID}}
+      AZURE_LOCATION: {{AZURE_LOCATION}}
+      SUBSCRIPTION_ID: {{SUBSCRIPTION_ID}}
+      PCF_RESOURCE_GROUP: {{PCF_RESOURCE_GROUP}}
+      NETWORK_RESOURCE_GROUP: {{NETWORK_RESOURCE_GROUP}}
+      BOSH_STORAGE_NAME: {{BOSH_STORAGE_NAME}}
+      OPSMAN_VERSION: {{OPSMAN_VERSION}}
+      OPS_MAN_IMAGE_URL: {{OPS_MAN_IMAGE_URL}}
+      OPSMAN_VM_NAME: {{OPSMAN_VM_NAME}}
+      OPSMAN_OS_DISK_SIZE: {{OPSMAN_OS_DISK_SIZE}}
+      OPSMAN_VM_USER: {{OPSMAN_VM_USER}}
+      OPS_MAN_PUBLIC_KEY: {{OPS_MAN_PUBLIC_KEY}}
+      VNET_NAME: {{VNET_NAME}}
+      INFRA_SUBNET_NAME: {{INFRA_SUBNET_NAME}}
+      OPSMGR_NSG: {{OPSMGR_NSG}}
+      OPSMAN_PRIVATE_IP: {{OPSMAN_PRIVATE_IP}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_PIP_NAME: {{OPSMAN_PIP_NAME}}
+
+- name: 3.config-opsman
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [2.create-opsman]
+  - task: config-opsman
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/configure-opsman.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      DECRYPT_PASSWORD: {{DECRYPT_PASSWORD}}
+
+ 
+###########################
+## Job - Upload ERT      ##
+###########################
+
+- name: 4.config-director-azure
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [3.config-opsman]
+      trigger: true
+  - task: config-director-azure
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/azure/ra_multirg/configure-director-azure.yml
+    params:
+      IAAS: {{IAAS}}
+      ORG: {{ORG}}
+      OPSMAN_TEMPLATE_DIR: {{OPSMAN_TEMPLATE_DIR}}
+      AZURE_SP_CI_USER: {{AZURE_SP_CI_USER}}
+      AZURE_SP_CI_PASSWORD: {{AZURE_SP_CI_PASSWORD}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      SUBSCRIPTION_ID: {{SUBSCRIPTION_ID}}
+      TENANT_ID: {{TENANT_ID}}
+      SERVICE_PRINCIPAL_NAME: {{SERVICE_PRINCIPAL_NAME}}
+      APPLICATION_ID: {{APPLICATION_ID}}
+      CLIENT_SECRET: {{CLIENT_SECRET}}
+      PCF_RESOURCE_GROUP: {{PCF_RESOURCE_GROUP}}
+      BOSH_STORAGE_NAME: {{BOSH_STORAGE_NAME}}
+      DEPLOYMENT_STORAGE_NAME: {{DEPLOYMENT_STORAGE_NAME}}
+      PCF_NSG: {{PCF_NSG}}
+      BOSH_PUBLIC_KEY: {{BOSH_PUBLIC_KEY}}
+      BOSH_PRIVATE_KEY: {{BOSH_PRIVATE_KEY}}
+      NETWORK_RESOURCE_GROUP: {{NETWORK_RESOURCE_GROUP}}
+      VNET_NAME: {{VNET_NAME}}
+      PCF_NETWORKS_DNS: {{PCF_NETWORKS_DNS}}
+      INFRA_NETWORK_NAME: {{INFRA_NETWORK_NAME}}
+      INFRA_SUBNET_NAME: {{INFRA_SUBNET_NAME}}
+      INFRA_NETWORK_CIDR: {{INFRA_NETWORK_CIDR}}
+      INFRA_NETWORK_RESERVED: {{INFRA_NETWORK_RESERVED}}
+      INFRA_NETWORK_GW: {{INFRA_NETWORK_GW}}
+      PCF_NETWORK_NAME: {{PCF_NETWORK_NAME}}
+      PCF_SUBNET_NAME: {{PCF_SUBNET_NAME}}
+      PCF_NETWORK_CIDR: {{PCF_NETWORK_CIDR}}
+      PCF_NETWORK_RESERVED: {{PCF_NETWORK_RESERVED}}
+      PCF_NETWORK_GW: {{PCF_NETWORK_GW}}
+      SERVICES_NETWORK_NAME: {{SERVICES_NETWORK_NAME}}
+      SERVICES_SUBNET_NAME: {{SERVICES_SUBNET_NAME}}
+      SERVICES_NETWORK_CIDR: {{SERVICES_NETWORK_CIDR}}
+      SERVICES_NETWORK_RESERVED: {{SERVICES_NETWORK_RESERVED}}
+      SERVICES_NETWORK_GW: {{SERVICES_NETWORK_GW}}
+      DYNAMIC_SERVICES_NETWORK_NAME: {{DYNAMIC_SERVICES_NETWORK_NAME}}
+      DYNAMIC_SERVICES_SUBNET_NAME: {{DYNAMIC_SERVICES_SUBNET_NAME}}
+      DYNAMIC_SERVICES_NETWORK_CIDR: {{DYNAMIC_SERVICES_NETWORK_CIDR}}
+      DYNAMIC_SERVICES_NETWORK_RESERVED: {{DYNAMIC_SERVICES_NETWORK_RESERVED}}
+      DYNAMIC_SERVICES_NETWORK_GW: {{DYNAMIC_SERVICES_NETWORK_GW}}
+      NTP_SERVERS: {{NTP_SERVERS}}
+      RESURRECTOR_ENABLED: {{RESURRECTOR_ENABLED}}
+      POST_DEPLOY_ENABLED: {{POST_DEPLOY_ENABLED}}
+      BOSH_RECREATE_ON_NEXT_DEPLOY: {{BOSH_RECREATE_ON_NEXT_DEPLOY}}
+      RETRY_BOSH_DEPLOYS: {{RETRY_BOSH_DEPLOYS}}
+      INTERNET_CONNECTED: {{INTERNET_CONNECTED}}          
+
+# Upload ERT 
+- name: 5.upload-ert
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [4.config-director-azure]
+      trigger: true
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: elastic-runtime
+        product_versions:
+        - product_version: {{ERT_VERSION}}
+  - task: upload-ert
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/upload-ert.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+# configure ert
+- name: 6.configure-ert
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [5.upload-ert]
+      trigger: true
+  - task: configure-ert
+    file:  pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/configure-ert.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      ERT_TEMPLATE_DIR: {{ERT_TEMPLATE_DIR}}
+      ERT_NETWORK_CONFIG_JSON: {{ERT_NETWORK_CONFIG_JSON}}
+      ERT_PROPERTIES_JSON: {{ERT_PROPERTIES_JSON}}
+      ERT_JOBS_CONFIG_JSON: {{ERT_JOBS_CONFIG_JSON}}
+      ERT_NETWORK: {{ERT_NETWORK}}
+      ERT_SYSTEM_DOMAIN: {{ERT_SYSTEM_DOMAIN}}
+      ERT_APP_DOMAIN: {{ERT_APP_DOMAIN}}
+      ERT_SSL: {{ERT_SSL}}
+      TCP_ROUTING: {{TCP_ROUTING}}
+      ROUTE_SERVICES: {{ROUTE_SERVICES}}
+      IGNORE_SSL_CERT_VERIFICATION: {{IGNORE_SSL_CERT_VERIFICATION}}
+      MYSQL_MONITOR_EMAIL: {{MYSQL_MONITOR_EMAIL}}
+      ALLOW_APP_SSH_ACCESS: {{ALLOW_APP_SSH_ACCESS}}
+      COMPANY_NAME: {{COMPANY_NAME}}
+      NETWORKING_POINT_OF_ENTRY: {{NETWORKING_POINT_OF_ENTRY}}
+      INTERNET_CONNECTED: {{INTERNET_CONNECTED}}
+      ALB_NAME: {{ALB_NAME}}
+      CONSUL_SERVER_IC: {{CONSUL_SERVER_IC}}
+      NATS_IC: {{NATS_IC}}
+      ETCD_SERVER_IC: {{ETCD_SERVER_IC}}
+      ETCD_PROXY_SERVER_IC: {{ETCD_PROXY_SERVER_IC}}
+      NFS_SERVER_IC: {{NFS_SERVER_IC}}
+      MYSQL_PROXY_IC: {{MYSQL_PROXY_IC}}
+      MYSQL_IC: {{MYSQL_IC}}
+      BACKUP_PREPARE_IC: {{BACKUP_PREPARE_IC}}
+      CCDB_IC: {{CCDB_IC}}
+      UAADB_IC: {{UAADB_IC}}
+      UAA_IC: {{UAA_IC}}
+      CLOUD_CONTROLLER_IC: {{CLOUD_CONTROLLER_IC}}
+      HA_PROXY_IC: {{HA_PROXY_IC}}
+      ROUTER_IC: {{ROUTER_IC}}
+      MYSQL_MONITOR_IC: {{MYSQL_MONITOR_IC}}
+      CLOUD_CONTROLLER_WORKER_IC: {{CLOUD_CONTROLLER_WORKER_IC}}
+      DIEGO_DATABASE_IC: {{DIEGO_DATABASE_IC}}
+      DIEGO_BRAIN_IC: {{DIEGO_BRAIN_IC}}
+      DIEGO_CELL_IC: {{DIEGO_CELL_IC}}
+      DOPPLER_IC: {{DOPPLER_IC}}
+      LOGGREGATOR_TRAFFICCONTROLLER_IC: {{LOGGREGATOR_TRAFFICCONTROLLER_IC}}
+
+
+###########################
+## Job - Deploy ERT      ##
+###########################
+- name: 7.apply-changes
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [6.configure-ert,6.1.configure-azure-sb,6.2.configure-hm-forwarder]
+      trigger: true
+  - task: apply-changes
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/apply-changes.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+
+# destroy azure
+- name: destroy-azure
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: destroy-azure
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/azure/ra_multirg/destroy-azure.yml
+    params:
+      AZURE_SP_CI_USER: {{AZURE_SP_CI_USER}}
+      AZURE_SP_CI_PASSWORD: {{AZURE_SP_CI_PASSWORD}}
+      TENANT_ID: {{TENANT_ID}}
+      SUBSCRIPTION_ID: {{SUBSCRIPTION_ID}}
+      PCF_RESOURCE_GROUP: {{PCF_RESOURCE_GROUP}}
+      NETWORK_RESOURCE_GROUP: {{NETWORK_RESOURCE_GROUP}}
+      SERVICE_PRINCIPAL_NAME: {{SERVICE_PRINCIPAL_NAME}}
+      NET_RG_READ_ONLY_ROLE_NAME: {{NET_RG_READ_ONLY_ROLE_NAME}}
+
+              
+## Tiles ##
+
+# Upload Azure Service Broker
+- name: 5.1.upload-azure-sb
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [4.config-director-azure]
+      trigger: true
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: microsoft-azure-service-broker
+        product_versions:
+        - product_version: {{AZURE_SB_VERSION}}
+  - task: upload-azure-sb
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/upload-azure-sb.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+# Prepare azure for azure service broker
+- name: prepare-azure-sb
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: prepare-azure-sb
+    file: pcf-automation/install-pcf/ci/tasks/azure_sb/prepare-azure-sb.yml
+    params:
+      AZURE_SP_CI_USER: {{AZURE_SP_CI_USER}}
+      AZURE_SP_CI_PASSWORD: {{AZURE_SP_CI_PASSWORD}}
+      AZURE_SB_SERVICE_PRINCIPAL_NAME: {{AZURE_SB_SERVICE_PRINCIPAL_NAME}}
+      AZURE_SB_SUBSCRIPTION_ID: {{AZURE_SB_SUBSCRIPTION_ID}}
+      AZURE_SB_TENANT_ID: {{AZURE_SB_TENANT_ID}}
+      AZURE_SB_CLIENT_ID: {{AZURE_SB_CLIENT_ID}}
+      AZURE_SB_CLIENT_SECRET: {{AZURE_SB_CLIENT_SECRET}}
+      AZURE_SB_LOCATION: {{AZURE_SB_LOCATION}}
+      AZURE_SB_RESOURCE_GROUP: {{AZURE_SB_RESOURCE_GROUP}}
+      AZURE_SB_DB_SERVER: {{AZURE_SB_DB_SERVER}}
+      AZURE_SB_SQL_SERVER_ADMIN_USER: {{AZURE_SB_SQL_SERVER_ADMIN_USER}}
+      AZURE_SB_SQL_SERVER_ADMIN_PASSWORD: {{AZURE_SB_SQL_SERVER_ADMIN_PASSWORD}}
+      AZURE_SB_DB_NAME: {{AZURE_SB_DB_NAME}}
+
+# Configure Azure Service Broker
+- name: 6.1.configure-azure-sb
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [prepare-azure-sb,5.1.upload-azure-sb]
+      trigger: true
+  - task: configure-azure-sb
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/configure-azure-sb.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      AZURE_SB_TEMPLATE_DIR: {{AZURE_SB_TEMPLATE_DIR}}
+      AZURE_SB_NETWORK_CONFIG_JSON: {{AZURE_SB_NETWORK_CONFIG_JSON}}
+      AZURE_SB_PROPERTIES_JSON: {{AZURE_SB_PROPERTIES_JSON}}
+      AZURE_SB_JOBS_CONFIG_JSON: {{AZURE_SB_JOBS_CONFIG_JSON}}
+      AZURE_SB_NETWORK: {{AZURE_SB_NETWORK}}
+      AZURE_SB_ENVIRONMENT: {{AZURE_SB_ENVIRONMENT}}
+      AZURE_SB_SUBSCRIPTION_ID: {{AZURE_SB_SUBSCRIPTION_ID}}
+      AZURE_SB_TENANT_ID: {{AZURE_SB_TENANT_ID}}
+      AZURE_SB_CLIENT_ID: {{AZURE_SB_CLIENT_ID}}
+      AZURE_SB_CLIENT_SECRET: {{AZURE_SB_CLIENT_SECRET}}
+      AZURE_SB_DB_SERVER: {{AZURE_SB_DB_SERVER}}
+      AZURE_SB_SQL_SERVER_ADMIN_USER: {{AZURE_SB_SQL_SERVER_ADMIN_USER}}
+      AZURE_SB_SQL_SERVER_ADMIN_PASSWORD: {{AZURE_SB_SQL_SERVER_ADMIN_PASSWORD}}
+      AZURE_SB_DB_NAME: {{AZURE_SB_DB_NAME}}
+      AZURE_SB_DATABASE_ENCRYPTION_KEY: {{AZURE_SB_DATABASE_ENCRYPTION_KEY}} 
+      INTERNET_CONNECTED: {{INTERNET_CONNECTED}}
+
+# upload hm forwarder tile
+- name: 5.2.upload-hm-forwarder
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [4.config-director-azure]
+      trigger: true
+    - get: azure-stemcell
+      params:
+        version: {{STEMCELL_3363}}
+        preserve_filename: true
+  - task: upload-hm-forwarder
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/upload-hm-forwarder.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      HM_FORWARDER_DOWNLOAD_LINK: {{HM_FORWARDER_DOWNLOAD_LINK}}
+
+- name: 6.2.configure-hm-forwarder
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [5.2.upload-hm-forwarder]
+      trigger: true
+  - task: configure-hm-forwarder
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/common/configure-hm-forwarder.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      HM_FORWORDER_TEMPLATE_DIR: {{HM_FORWORDER_TEMPLATE_DIR}}
+      HM_FORWORDER_NETWORK_CONFIG_JSON: {{HM_FORWORDER_NETWORK_CONFIG_JSON}}
+      HM_FORWORDER_JOBS_CONFIG_JSON: {{HM_FORWORDER_JOBS_CONFIG_JSON}}
+      HM_FORWORDER_NETWORK: {{HM_FORWORDER_NETWORK}}
+      INTERNET_CONNECTED: {{INTERNET_CONNECTED}}
+              
+
+# DNS Create
+- name: 1.1.dns-create
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+      passed: [1.prepare-azure]
+      trigger: true
+  - task: dns-create
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/azure/ra_multirg/dns-create.yml
+    params:
+      AZURE_SP_CI_USER: {{AZURE_SP_CI_USER}}
+      AZURE_SP_CI_PASSWORD: {{AZURE_SP_CI_PASSWORD}}
+      TENANT_ID: {{TENANT_ID}}
+      SUBSCRIPTION_ID: {{SUBSCRIPTION_ID}}
+      PCF_RESOURCE_GROUP: {{PCF_RESOURCE_GROUP}}
+      NETWORK_RESOURCE_GROUP: {{NETWORK_RESOURCE_GROUP}}
+      AZURE_LOCATION: {{AZURE_LOCATION}}
+      VNET_NAME: {{VNET_NAME}}
+      INFRA_SUBNET_NAME: {{INFRA_SUBNET_NAME}}
+      BOSH_STORAGE_NAME: {{BOSH_STORAGE_NAME}}
+      DNS_IMAGE_URN: {{DNS_IMAGE_URN}}
+      DNS_VM_USER: {{DNS_VM_USER}}
+      DNS_SERVER_PRIVATE_KEY: {{DNS_SERVER_PRIVATE_KEY}}
+      DNS_PUBLIC_KEY: {{DNS_PUBLIC_KEY}}
+      DNS_VM_NAME1: {{DNS_VM_NAME1}}
+      DNS_NIC_NAME1: {{DNS_NIC_NAME1}}
+      DNS_PRIVATE_IP1: {{DNS_PRIVATE_IP1}}
+      DNS_VM_NAME2: {{DNS_VM_NAME2}}
+      DNS_NIC_NAME2: {{DNS_NIC_NAME2}}
+      DNS_PRIVATE_IP2: {{DNS_PRIVATE_IP2}}
+      ALB_PIP_NAME: {{ALB_PIP_NAME}}
+      TOP_LEVEL_DOMAIN: {{TOP_LEVEL_DOMAIN}}
+      DNS_SYSTEM_DOMAIN: {{DNS_SYSTEM_DOMAIN}}
+      DNS_APPS_DOMAIN: {{DNS_APPS_DOMAIN}}
+      OPSMAN_DOMAIN: {{OPSMAN_DOMAIN}}
+      OPSMAN_PRIVATE_IP: {{OPSMAN_PRIVATE_IP}}
+      NETWORKS_DNS: {{NETWORKS_DNS}}

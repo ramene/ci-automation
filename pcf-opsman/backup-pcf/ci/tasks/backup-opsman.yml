@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rsamban/pcf-backup
+    tag: "1.0"
+inputs:
+  - name: pcf-backup
+run:
+  path: pcf-backup/pcf_automation/backup-pcf/ci/scripts/backup-opsman.sh
+outputs:
+  - name: pcfawsops_backup_opsman_put

@@ -1,0 +1,32 @@
+concourse-db:
+  image: postgres:9.5
+  environment:
+    POSTGRES_DB: concourse
+    POSTGRES_USER: concourse
+    POSTGRES_PASSWORD: db6dcf1f240255f3de34
+    PGDATA: /database
+
+concourse-web:
+  image: concourse/concourse
+  links: [concourse-db]
+  command: web
+  ports: ["443:8443"]
+  volumes: ["./keys/web:/concourse-keys"]
+  environment:
+    CONCOURSE_BASIC_AUTH_USERNAME: concourse
+    CONCOURSE_BASIC_AUTH_PASSWORD: "{{CONCOURSE_BASIC_AUTH_PASSWORD}}"
+    CONCOURSE_EXTERNAL_URL: "${CONCOURSE_EXTERNAL_URL}"
+    CONCOURSE_TLS_BIND_PORT: 8443
+    CONCOURSE_TLS_CERT: /concourse-keys/${TLS_CERT_FILE}
+    CONCOURSE_TLS_KEY: /concourse-keys/${TLS_KEY_FILE}
+    CONCOURSE_POSTGRES_DATA_SOURCE: |-
+      postgres://concourse:db6dcf1f240255f3de34@concourse-db:5432/concourse?sslmode=disable
+
+concourse-worker:
+  image: concourse/concourse
+  privileged: true
+  links: [concourse-web]
+  command: worker
+  volumes: ["./keys/worker:/concourse-keys"]
+  environment:
+    CONCOURSE_TSA_HOST: concourse-web

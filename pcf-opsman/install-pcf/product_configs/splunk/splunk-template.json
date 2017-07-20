@@ -1,0 +1,14 @@
+---
+add_app_info: "{{add_app_info}}"
+cf_api_endpoint: "{{cf_api_endpoint}}"
+cf_api_user: "{{cf_api_user}}"
+cf_api_password: { "secret": "{{cf_api_password}}" }
+firehose_subscription_id: "{{firehose_subscription_id}}"
+splunk_token: "{{splunk_token}}"
+splunk_index: "{{splunk_index}}"
+splunk_server: "{{splunk_server}}"
+splunk_ssl: "{{splunk_ssl}}"
+splunk_ssl_cert: "{{splunk_ssl_cert}}"
+splunk_ssl_password: { "secret": "{{splunk_ssl_password}}" }
+splunk_ssl_root_ca: "{{splunk_ssl_root_ca}}"
+splunk_ssl_common_name: "{{splunk_ssl_common_name}}"

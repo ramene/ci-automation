@@ -1,0 +1,8 @@
+{
+    "ntp_servers_string": "{{ntp_servers_string}}",
+    "metrics_ip": "{{metrics_ip}}",
+    "resurrector_enabled": {{resurrector_enabled}},
+    "post_deploy_enabled": {{post_deploy_enabled}},
+    "bosh_recreate_on_next_deploy": {{bosh_recreate_on_next_deploy}},
+    "retry_bosh_deploys": {{retry_bosh_deploys}}
+}

@@ -1,0 +1,10 @@
+---
+boshhmforwarder_incoming_port: "{{boshhmforwarder_incoming_port}}"
+metron_agent_deployment: "{{metron_agent_deployment}}"
+doppler_user: "{{doppler_user}}"
+doppler_user_password: { "secret": "{{doppler_user_password}}" }
+insecure_ssl_skip_verify: "{{insecure_ssl_skip_verify}}"
+subscription_id: "{{subscription_id}}"
+datadog_api_url: "{{datadog_api_url}}"
+datadog_api_key: {"secret": "{{datadog_api_key}}"}
+metric_prefix: "{{metric_prefix}}"

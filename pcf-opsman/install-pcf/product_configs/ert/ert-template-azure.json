@@ -1,0 +1,101 @@
+{
+  "networks_and_azs":{
+    "networks_and_azs": {
+      "network": {
+        "name": "{{ERT_NETWORK}}"
+      }
+    }
+  },
+  "properties": {
+    "properties": {
+      ".cloud_controller.system_domain": {
+        "value": "system.{{pcf_ert_domain}}"
+      },
+      ".cloud_controller.apps_domain": {
+        "value": "apps.{{pcf_ert_domain}}"
+      },
+      ".ha_proxy.static_ips": {
+        "value": "{{HA_PROXY_IPS}}"
+      },
+      ".properties.networking_point_of_entry": {
+        "value": "haproxy"
+        },
+      ".properties.networking_point_of_entry.haproxy.ssl_rsa_certificate": {
+        "value": {
+          "cert_pem": "{{pcf_ert_ssl_cert}}",
+          "private_key_pem": "{{pcf_ert_ssl_key}}"
+          }
+      },
+      ".ha_proxy.skip_cert_verify": {
+        "value": true
+      },
+      ".properties.tcp_routing": {
+        "value": "disable"
+      },
+      ".properties.route_services": {
+        "value": "enable"
+      },
+      ".properties.route_services.enable.ignore_ssl_cert_verification": {
+        "value": true
+      },
+      ".properties.security_acknowledgement": {
+        "value": "X"
+      },
+      ".properties.mysql_backups": {
+        "value": "disable"
+      },
+      ".properties.system_database": {
+        "value": "internal_mysql"
+      },
+      ".mysql_monitor.recipient_email": {
+        "value": "{{MYSQL_MONITOR_EMAIL}}"
+      },
+      ".cloud_controller.allow_app_ssh_access": {
+        "value": true
+      },
+      ".push-apps-manager.company_name": {
+        "value": "Ecsteam, Inc."
+      }
+    }
+  },
+  "jobs": {
+      "consul_server": {"instance_type": {"id": "automatic"},"instances": 1,"persistent_disk":{"size_mb":"automatic"}},
+      "nats": {"instance_type": {"id": "automatic"},"instances": 1},
+      "etcd_server": {"instance_type": {"id": "automatic"},"instances": 1,"persistent_disk":{"size_mb":"automatic"}},
+      "nfs_server": {"instance_type": {"id": "automatic"},"instances": 0,"persistent_disk":{"size_mb":"automatic"}},
+      "mysql_proxy": {"instance_type": {"id": "automatic"},"instances": 0},
+      "mysql": {"instance_type": {"id": "automatic"},"instances": 0,"persistent_disk":{"size_mb":"automatic"}},
+      "consoledb": {"instance_type": {"id": "automatic"},"instances": 0,"persistent_disk":{"size_mb":"automatic"}},
+      "ccdb": {"instance_type": {"id": "automatic"},"instances": 0,"persistent_disk":{"size_mb":"automatic"}},
+      "uaadb": {"instance_type": {"id": "automatic"},"instances": 0,"persistent_disk":{"size_mb":"automatic"}},
+      "uaa": {"instance_type": {"id": "automatic"},"instances": 1},
+      "cloud_controller": {"instance_type": {"id": "automatic"},"instances": 1,"persistent_disk":{"size_mb":"automatic"}},
+      "ha_proxy": {"instance_type": {"id": "automatic"},"instances": 0},
+      "router": {"instance_type": {"id": "automatic"},"instances": 1},
+      "mysql_monitor": {"instance_type": {"id": "automatic"},"instances": 0},
+      "clock_global": {"instance_type": {"id": "automatic"},"instances": 1},
+      "cloud_controller_worker": {"instance_type": {"id": "automatic"},"instances": 1},
+      "collector": {"instance_type": {"id": "automatic"},"instances": 0},
+      "diego_database": {"instance_type": {"id": "automatic"},"instances": 1,"persistent_disk":{"size_mb":"automatic"}},
+      "diego_brain": {"instance_type": {"id": "automatic"},"instances": 1,"persistent_disk":{"size_mb":"automatic"}},
+      "diego_cell": {"instance_type": {"id": "automatic"},"instances": 6},
+      "doppler": {"instance_type": {"id": "automatic"},"instances": 1},
+      "loggregator_trafficcontroller": {"instance_type": {"id": "automatic"},"instances": 1},
+      "tcp_router": {"instance_type": {"id": "automatic"},"instances": 0,"persistent_disk":{"size_mb":"automatic"}},
+      "backup-prepare": {"instance_type": {"id": "automatic"},"instances": 0,"persistent_disk":{"size_mb":"automatic"}},
+      "push-apps-manager": {"instance_type": {"id": "automatic"},"instances": 1},
+      "smoke-tests": {"instance_type": {"id": "automatic"},"instances": 1},
+      "notifications-tests": {"instance_type": {"id": "automatic"},"instances": 1},
+      "notifications-ui": {"instance_type": {"id": "automatic"},"instances": 1},
+      "notifications-ui-tests": {"instance_type": {"id": "automatic"},"instances": 1},
+      "autoscaling-register-broker": {"instance_type": {"id": "automatic"},"instances": 1},
+      "autoscaling-destroy-broker": {"instance_type": {"id": "automatic"},"instances": 1},
+      "autoscaling-tests": {"instance_type": {"id": "automatic"},"instances": 1},
+      "acceptance-tests": {"instance_type": {"id": "automatic"},"instances": 1},
+      "push-pivotal-account": {"instance_type": {"id": "automatic"},"instances": 1},
+      "mysql-rejoin-unsafe": {"instance_type": {"id": "automatic"},"instances": 0},
+      "autoscaling": {"instance_type": {"id": "automatic"},"instances": 1},
+      "bootstrap": {"instance_type": {"id": "automatic"},"instances": 1},
+      "notifications": {"instance_type": {"id": "automatic"},"instances": 1}
+  }
+}

@@ -1,0 +1,57 @@
+echo "{
+    \"icmp_checks_enabled\": false,
+    \"networks\": [
+         {
+             \"name\": \"$INFRA_NETWORK_NAME\",
+             \"service_network\": false,
+             \"subnets\": [
+                 {
+                     \"iaas_identifier\": \"${NETWORK_RESOURCE_GROUP}/${VNET_NAME}/${INFRA_SUBNET_NAME}\",
+                     \"cidr\": \"${INFRA_NETWORK_CIDR}\",
+                     \"reserved_ip_ranges\": \"${INFRA_NETWORK_RESERVED}\",
+                     \"dns\": \"${PCF_NETWORKS_DNS}\",
+                     \"gateway\": \"${INFRA_NETWORK_GW}\"
+                 }
+             ]
+         },
+         {
+             \"name\": \"$PCF_NETWORK_NAME\",
+             \"service_network\": false,
+             \"subnets\": [
+                 {
+                     \"iaas_identifier\": \"${NETWORK_RESOURCE_GROUP}/${VNET_NAME}/${PCF_SUBNET_NAME}\",
+                     \"cidr\": \"${PCF_NETWORK_CIDR}\",
+                     \"reserved_ip_ranges\": \"${PCF_NETWORK_RESERVED}\",
+                     \"dns\": \"${PCF_NETWORKS_DNS}\",
+                     \"gateway\": \"${PCF_NETWORK_GW}\"
+                 }
+             ]
+         },
+         {
+             \"name\": \"$SERVICES_NETWORK_NAME\",
+             \"service_network\": false,
+             \"subnets\": [
+                 {
+                     \"iaas_identifier\": \"${NETWORK_RESOURCE_GROUP}/${VNET_NAME}/${SERVICES_SUBNET_NAME}\",
+                     \"cidr\": \"${SERVICES_NETWORK_CIDR}\",
+                     \"reserved_ip_ranges\": \"${SERVICES_NETWORK_RESERVED}\",
+                     \"dns\": \"${PCF_NETWORKS_DNS}\",
+                     \"gateway\": \"${SERVICES_NETWORK_GW}\"
+                 }
+             ]
+         },
+         {
+             \"name\": \"$DYNAMIC_SERVICES_NETWORK_NAME\",
+             \"service_network\": true,
+             \"subnets\": [
+                 {
+                     \"iaas_identifier\": \"${NETWORK_RESOURCE_GROUP}/${VNET_NAME}/${DYNAMIC_SERVICES_SUBNET_NAME}\",
+                     \"cidr\": \"${DYNAMIC_SERVICES_NETWORK_CIDR}\",
+                     \"reserved_ip_ranges\": \"${DYNAMIC_SERVICES_NETWORK_RESERVED}\",
+                     \"dns\": \"${PCF_NETWORKS_DNS}\",
+                     \"gateway\": \"${DYNAMIC_SERVICES_NETWORK_GW}\"
+                 }
+             ]
+         }
+     ]
+}"

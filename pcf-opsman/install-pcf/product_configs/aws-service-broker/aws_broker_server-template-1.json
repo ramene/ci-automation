@@ -1,0 +1,85 @@
+{
+  "networks_and_azs":{
+    "networks_and_azs": {
+      "singleton_availability_zone": {
+        "name": "{{az1}}"
+      },
+      "other_availability_zones": [
+        { "name": "{{az1}}" }
+      ],
+      "network": {
+        "name": "{{AWS_SB_NETWORK}}"
+      }
+    }
+  },
+  "properties": {
+    "properties": {
+      ".properties.aws_access_key_id": {
+          "value": "{{AWS_SB_ACCESS_KEY}}"
+        },
+      ".properties.aws_secret_access_key": { 
+	  "value": {"secret": "{{AWS_SB_SECRET_KEY}}"}
+      },
+      ".properties.aws_default_region": { 
+	  "value": "{{AWS_SB_DEFAULT_REGION}}"
+      },
+      ".properties.backing_db_selector.external_mysql.db_host": { 
+	  "value": "{{AWS_SB_RDS_HOST}}"
+      },
+      ".properties.backing_db_selector.external_mysql.db_port": { 
+	  "value": "{{AWS_SB_RDS_PORT}}"
+      },
+      ".properties.backing_db_selector.external_mysql.db_username": { 
+	  "value": "{{AWS_SB_RDS_USERNAME}}"
+      },
+      ".properties.backing_db_selector.external_mysql.db_password": { 
+	  "value": {"secret": "{{AWS_SB_RDS_PASSWORD}}"}
+      },
+      ".properties.backing_db_selector.external_mysql.db_name": { 
+	  "value": "{{AWS_SB_RDS_DBNAME}}"
+      },
+      ".properties.db_ssl_selector": { 
+	  "value": "Disabled"
+      },
+      ".properties.rds_default_region": { 
+	  "value": "{{AWS_SB_RDS_DEFAULT_REGION}}"
+      },
+      ".properties.rds_default_az": { 
+	  "value": "{{AWS_SB_RDS_DEFAULT_AZ}}"
+      },
+      ".properties.rds_networking_selector": { 
+	  "value": "Custom"
+      },
+      ".properties.rds_networking_selector.custom_option.subnet_group_name": { 
+	  "value": "{{RDS_DB_SUBNET_GROUP_NAME}}"
+      },
+      ".properties.rds_networking_selector.custom_option.security_group_ids": { 
+	  "value": "{{RDS_DB_SUBNET_SECURITY_GROUP_ID}}"
+      },
+      ".properties.rds_storage_encryption": { 
+	  "value": true
+      },
+      ".properties.rds_mysql_public": { 
+	  "value": false
+      },
+      ".properties.rds_sqlserver_public": { 
+	  "value": false
+      },
+      ".properties.rds_mariadb_public": { 
+	  "value": false
+      },
+      ".properties.rds_aurora_public": { 
+	  "value": false
+      },
+      ".properties.rds_oracle_public": { 
+	  "value": false
+      },
+      ".properties.s3_region": { 
+	  "value": "{{AWS_SB_S3_DEFAULT_REGION}}"
+      },
+      ".properties.sqs_region": { 
+	  "value": "{{AWS_SB_SQS_DEFAULT_REGION}}"
+      }
+    }
+  }
+}

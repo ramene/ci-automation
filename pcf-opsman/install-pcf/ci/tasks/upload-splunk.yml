@@ -1,0 +1,12 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rsamban/pcf-om-aws
+inputs:
+  - name: pcf-automation
+  - name: pcf-splunk-tile-get
+run:
+  path: pcf-automation/pcf-opsman/install-pcf/ci/scripts/upload-splunk.sh

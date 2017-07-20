@@ -1,0 +1,13 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rsamban/pcf-om-aws
+inputs:
+  - name: pcf-automation
+  - name: pcfawsops-terraform-state-get
+  - name: aws-sb-terraform-state-get
+run:
+  path:  pcf-automation/pcf-opsman/install-pcf/ci/scripts/configure-aws-sb.sh

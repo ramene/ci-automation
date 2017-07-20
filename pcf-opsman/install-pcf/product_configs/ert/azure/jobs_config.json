@@ -1,0 +1,334 @@
+echo "{
+    \"consul_server\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $CONSUL_SERVER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"nats\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $NATS_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"etcd_tls_server\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $ETCD_SERVER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"etcd_server\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $ETCD_PROXY_SERVER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"nfs_server\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $NFS_SERVER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"mysql_proxy\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $MYSQL_PROXY_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"mysql\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $MYSQL_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"backup-prepare\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $BACKUP_PREPARE_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"ccdb\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $CCDB_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"uaadb\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $UAADB_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"uaa\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $UAA_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"cloud_controller\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $CLOUD_CONTROLLER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"ha_proxy\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $HA_PROXY_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"router\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $ROUTER_IC,
+      \"elb_names\": [\"${ALB_NAME}\"],
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"mysql_monitor\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $MYSQL_MONITOR_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"clock_global\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $CLOCK_GLOBAL_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"cloud_controller_worker\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $CLOUD_CONTROLLER_WORKER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"diego_database\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $DIEGO_DATABASE_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"diego_brain\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $DIEGO_BRAIN_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"diego_cell\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $DIEGO_CELL_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"doppler\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $DOPPLER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"loggregator_trafficcontroller\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $LOGGREGATOR_TRAFFICCONTROLLER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"tcp_router\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $TCP_ROUTER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"push-apps-manager\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $PUSH_APPS_MANAGER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"smoke-tests\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $SMOKE_TESTS_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"notifications\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $NOTIFICATIONS_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"notifications-ui\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $NOTIFICATIONS_UI_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"autoscaling\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $AUTOSCALING_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"autoscaling-register-broker\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $AUTOSCALING_REGISTER_BROKER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"autoscaling-destroy-broker\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $AUTOSCALING_DESTROY_BROKER_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"bootstrap\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $BOOTSTRAP_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"push-pivotal-account\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $PUSH_PIVOTAL_ACCOUNT_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    },
+    \"mysql-rejoin-unsafe\": {
+      \"instance_type\": {
+        \"id\": \"automatic\"
+      },
+      \"instances\": $MYSQL_REJOIN_UNSAFE_IC,
+      \"internet_connected\": $INTERNET_CONNECTED,
+      \"persistent_disk\": {
+        \"size_mb\": \"automatic\"
+      }
+    }
+}"
+

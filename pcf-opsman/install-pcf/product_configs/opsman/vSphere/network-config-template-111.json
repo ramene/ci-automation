@@ -1,0 +1,21 @@
+{
+    "icmp_checks_enabled": false,
+    "networks": [
+         {
+             "name": "{{NETWORK1}}",
+             "service_network": {{NETWORK1_IS_SERVICE}},
+             "subnets": [
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK11}}",
+                     "cidr": "{{NETWORK1_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK1_RESERVED1}}",
+                     "dns": "{{NETWORK1_DNS1}}",
+                     "gateway": "{{NETWORK1_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 }
+             ]
+         }
+     ]
+}

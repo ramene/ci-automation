@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rsamban/pcf-om-aws
+inputs:
+  - name: pcf-automation
+  - name: pcfawsops-terraform-state-get
+params:
+  PEM: replace-me
+  OPSMAN_HOST: replace-me
+run:
+  path: pcf-automation/pcf-opsman/install-pcf/ci/scripts/prepare-rds.sh

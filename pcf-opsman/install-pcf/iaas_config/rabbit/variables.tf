@@ -1,0 +1,10 @@
+variable "aws_access_key" {}
+variable "aws_secret_key" {}
+variable "aws_region" {}
+variable "aws_cert_arn" {}
+variable "environment" {}
+variable "vpc_cidr" {}
+variable "vpc_id" {}
+variable "service_subnet1" {}
+variable "service_subnet2" {}
+variable "service_subnet3" {}

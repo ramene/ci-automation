@@ -1,0 +1,101 @@
+groups:
+- name: all
+  jobs:
+  - upload-products
+  - stage-products
+  - apply-changes
+- name: upload-products
+  jobs:
+  - upload-products
+- name: stage
+  jobs:
+  - stage-products
+- name: deploy
+  jobs:
+  - apply-changes
+
+resource_types:
+- name: mypivnet
+  type: docker-image
+  source:
+    repository: {{PIVNET_REPO}}
+    tag: {{PIVNET_REPO_TAG}}
+
+resources:
+- name: pcf-automation
+  type: git
+  source:
+    branch: master
+    uri: {{GIT_URI}}
+
+- name: pcf-products
+  type: mypivnet
+  source:
+    iaas: {{IAAS}}
+    api_token: {{PIVNET_TOKEN}}
+
+jobs:
+
+###########################
+## Job - Upload Products     ##
+###########################
+- name: upload-products
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: stemcells
+        - product_slug: stemcells
+        - product_slug: elastic-runtime
+        - product_slug: pivotal-rabbitmq-service
+        - product_slug: p-mysql
+        product_versions:
+        - product_version: {{STEMCELL_VERSION_3263_13}}
+        - product_version: {{STEMCELL_VERSION_3263_14}}
+        - product_version: {{ERT_VERSION}}
+        - product_version: {{RABBITMQ_VERSION}}
+        - product_version: {{MYSQL_VERSION}}
+
+  - task: upload-products
+    file: pcf-automation/upgrade-pcf/ci/tasks/upload-products.yml
+    params:
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+
+###########################
+## Job - Trigger product staging     ##
+###########################
+- name: stage-products
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: stage-products
+    file: pcf-automation/upgrade-pcf/ci/tasks/stage-products.yml
+    params:
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+###########################
+## Job - Deploy ERT      ##
+###########################
+- name: apply-changes
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: apply-changes
+    file: pcf-automation/upgrade-pcf/ci/tasks/apply-changes.yml
+    params:
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}

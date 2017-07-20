@@ -1,0 +1,3 @@
+echo "{
+  \"network\": \"$INFRA_NETWORK_NAME\"
+}"

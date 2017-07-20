@@ -1,0 +1,532 @@
+groups:
+- name: all
+  jobs:
+  - 1.prepare-aws
+  - prepare-aws-sb
+  - prepare-aws-rabbitmq
+  - 2.config-opsman
+  - 3.config-director-aws
+  - 4.upload-ert
+  - 4.1.upload-rabbitmq
+  - 4.2.upload-aws-sb
+  - 4.3.upload-splunk
+  - 4.4.upload-datadog
+  - 5.configure-ert
+  - 5.1.configure-rabbitmq
+  - 5.2.configure-aws-sb
+  - 5.3.configure-splunk
+  - 5.4.configure-datadog
+  - prepare-rds
+  - 6.apply-changes
+  - destroy-aws
+- name: 1.prepare-aws
+  jobs:
+  - 1.prepare-aws
+  - prepare-aws-sb
+  - prepare-aws-rabbitmq
+  - prepare-rds
+- name: 2.config-opsman
+  jobs:
+  - 2.config-opsman
+- name: 3.config-director-aws
+  jobs:
+  - 3.config-director-aws
+- name: 4.upload-products
+  jobs:
+  - 4.upload-ert
+  - 4.1.upload-rabbitmq
+  - 4.2.upload-aws-sb
+  - 4.3.upload-splunk
+  - 4.4.upload-datadog
+- name: 5.configure-products
+  jobs:
+  - 5.configure-ert
+  - 5.1.configure-rabbitmq
+  - 5.2.configure-aws-sb
+  - 5.3.configure-splunk
+  - 5.4.configure-datadog
+- name: 6.apply-changes
+  jobs:
+  - 6.apply-changes
+
+resource_types:
+- name: mypivnet
+  type: docker-image
+  source:
+    repository: rsamban/pivnet
+    tag: "1.0"
+
+resources:
+- name: pcf-automation
+  type: git
+  source:
+    branch: master
+    #uri: git@192.168.61.5:root/pcf-automation.git
+    uri: git@github.com:rsamban/pcf-automation.git
+    private_key: {{GIT_PRIVATE_KEY}}
+- name: pcf-products
+  type: mypivnet  
+  source:
+    iaas: {{IAAS}}
+    api_token: {{PIVNET_TOKEN}}
+
+- name: pcfawsops-terraform-state-put
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    versioned_file: terraform.tfstate
+- name: pcfawsops-terraform-state-get
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    versioned_file: terraform.tfstate
+
+- name: rabbitmq-terraform-state-get
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    versioned_file: {{S3_RABBITMQ_TF_STATE_FILE_NAME}}
+- name: rabbitmq-terraform-state-put
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    versioned_file: {{S3_RABBITMQ_TF_STATE_FILE_NAME}}
+
+- name: aws-sb-terraform-state-get
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    versioned_file: {{S3_AWS_SB_TF_STATE_FILE_NAME}}
+
+- name: aws-sb-terraform-state-put
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    versioned_file: {{S3_AWS_SB_TF_STATE_FILE_NAME}}
+
+- name: pcf-splunk-tile-get
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_CUSTOM_TILE_BUCKET}}
+    versioned_file: {{S3_SPLUNK_TILE_FILE_NAME}}
+
+- name: pcf-datadog-tile-get
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY}}
+    secret_access_key: {{AWS_SECRET_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_CUSTOM_TILE_BUCKET}}
+    versioned_file: {{S3_DATADOG_TILE_FILE_NAME}}
+
+
+
+jobs:
+- name: 1.prepare-aws
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+  - task: prepare-aws
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/prepare-aws.yml
+    params:
+      TF_VAR_aws_access_key: {{AWS_ACCESS_KEY}}
+      TF_VAR_aws_secret_key: {{AWS_SECRET_KEY}}
+      TF_VAR_aws_region: {{AWS_REGION}}
+      TF_VAR_aws_key_name: {{AWS_KEY_NAME}}
+      TF_VAR_aws_cert_arn: {{AWS_CERT_ARN}}
+      TF_VAR_rds_db_username: {{RDS_DB_USERNAME}}
+      TF_VAR_rds_db_password: {{RDS_DB_PASSWORD}}
+      TF_VAR_environment: {{ENVIRONMENT}}
+      TF_VAR_opsman_ami: {{OPSMAN_AMI}}
+      TF_VAR_amis_nat: {{AMIS_NAT}}
+      TF_VAR_az1: {{AZ1}}
+      TF_VAR_az2: {{AZ2}}
+      TF_VAR_az3: {{AZ3}}
+      OPSMAN_VERSION: {{OPSMAN_VERSION}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+  - put: pcfawsops-terraform-state-put
+    params:
+      file: pcfawsops-terraform-state-put/terraform.tfstate
+
+- name: prepare-aws-sb
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+    - get: aws-sb-terraform-state-get
+  - task: prepare-aws-sb
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/prepare-aws-sb.yml
+    params:
+      S3_AWS_SB_TF_STATE_FILE_NAME: {{S3_AWS_SB_TF_STATE_FILE_NAME}}
+      TF_VAR_aws_access_key: {{AWS_ACCESS_KEY}}
+      TF_VAR_aws_secret_key: {{AWS_SECRET_KEY}}
+      TF_VAR_rds_db_username: {{AWS_SB_RDS_DB_USERNAME}}
+      TF_VAR_rds_db_password: {{AWS_SB_RDS_DB_PASSWORD}}
+  - put: aws-sb-terraform-state-put
+  #    params:
+  #  file: aws-sb-terraform-state-put/{{S3_AWS_SB_TF_STATE_FILE_NAME}}
+
+- name: prepare-aws-rabbitmq
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+    - get: rabbitmq-terraform-state-get
+  - task: prepare-aws-rabbitmq
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/prepare-aws-rabbit.yml
+    params:
+      S3_RABBITMQ_TF_STATE_FILE_NAME: {{S3_RABBITMQ_TF_STATE_FILE_NAME}}
+      TF_VAR_aws_access_key: {{AWS_ACCESS_KEY}}
+      TF_VAR_aws_secret_key: {{AWS_SECRET_KEY}}
+      TF_VAR_aws_cert_arn: {{AWS_CERT_ARN}}
+  - put: rabbitmq-terraform-state-put
+  #    params:
+  #   file: rabbitmq-terraform-state-put/{{S3_RABBITMQ_TF_STATE_FILE_NAME}}
+
+- name: prepare-rds
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+  - task: prepare-rds
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/prepare-rds.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      PEM: {{PEM}}
+            
+
+- name: 2.config-opsman
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: config-opsman
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/config-opsman.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+ 
+###########################
+## Job - Upload ERT      ##
+###########################
+
+- name: 3.config-director-aws
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+  - task: config-director-aws
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/config-director-aws.yml
+    params:
+      IAAS: {{IAAS}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      AZ_COUNT: {{AZ_COUNT}}
+      AWS_TEMPLATE_DIR: {{AWS_TEMPLATE_DIR}}
+      AWS_REGION: {{AWS_REGION}}
+      AWS_KEY_NAME: {{AWS_KEY_NAME}}
+      PRIVATE_KEY: {{PEM}}
+      NTP_SERVERS_STRING: {{NTP_SERVERS_STRING}}
+      RESURRECTOR_ENABLED: {{RESURRECTOR_ENABLED}}
+      POST_DEPLOY_ENABLED: {{POST_DEPLOY_ENABLED}}
+      BOSH_RECREATE_ON_NEXT_DEPLOY: {{BOSH_RECREATE_ON_NEXT_DEPLOY}}
+      RETRY_BOSH_DEPLOYS: {{RETRY_BOSH_DEPLOYS}}
+      BLOBSTORE_TYPE: {{BLOBSTORE_TYPE}}
+      S3_ENDPOINT: {{S3_ENDPOINT}}
+      DATABASE_TYPE: {{DATABASE_TYPE}}
+      ICMP_ENABLED: {{ICMP_ENABLED}}
+      NETWORK1: {{NETWORK1}}
+      NETWORK1_IS_SERVICE: {{NETWORK1_IS_SERVICE}}
+      NETWORK2: {{NETWORK2}}
+      NETWORK2_IS_SERVICE: {{NETWORK2_IS_SERVICE}}
+      IP_PREFIX: {{IP_PREFIX}}
+      SINGLETON_AVAILABILITY_ZONE: {{SINGLETON_AVAILABILITY_ZONE}}
+      SINGLETON_AVAILABILITY_NETWORK: {{NETWORK1}}
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+
+
+###########################
+## Job - Upload ERT      ##
+###########################
+- name: 4.upload-ert
+  max_in_flight: 1
+  serial_groups: [full]
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: elastic-runtime
+        product_versions:
+        - product_version: {{ERT_VERSION}}
+  - task: upload-ert
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/upload-ert.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+# configure ert
+- name: 5.configure-ert
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+  - task: configure-ert
+    file:  pcf-automation/pcf-opsman/install-pcf/ci/tasks/configure-ert-aws.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      AZ_COUNT: {{AZ_COUNT}}
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      ERT_SSL_CERT: {{ERT_SSL_CERT}}
+      ERT_TEMPLATE: {{ERT_TEMPLATE}}
+      S3_ENDPOINT: {{S3_ENDPOINT}}
+      PRIVATE_KEY: {{PEM}}
+# upload RabbitMQ
+- name: 4.1.upload-rabbitmq
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: pivotal-rabbitmq-service
+        product_versions:
+        - product_version: {{RABBITMQ_VERSION}}
+  - task: upload-rabbitmq
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/upload-rabbitmq.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+- name: 5.1.configure-rabbitmq
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: rabbitmq-terraform-state-get
+    - get: pcfawsops-terraform-state-get
+  - task: configure-rabbitmq
+    file:  pcf-automation/pcf-opsman/install-pcf/ci/tasks/configure-rabbitmq-aws.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      AZ_COUNT: {{AZ_COUNT}}
+      RABBITMQ_TEMPLATE: {{RABBITMQ_TEMPLATE}}
+      RABBITMQ_NETWORK: {{RABBITMQ_NETWORK}}
+      RABBITMQ_ADMIN_USERNAME: {{RABBITMQ_ADMIN_USERNAME}}
+      RABBITMQ_ADMIN_PASSWORD: {{RABBITMQ_ADMIN_PASSWORD}}
+      RABBITMQ_EXTERNAL_LB_DNS_NAME: {{RABBITMQ_EXTERNAL_LB_DNS_NAME}}
+# Upload AWS Service Broker
+- name: 4.2.upload-aws-sb
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: pcf-service-broker-for-aws
+        product_versions:
+        - product_version: {{AWS_SB_VERSION}}
+  - task: upload-aws-sb
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/upload-aws-sb.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+- name: 5.2.configure-aws-sb
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+    - get: aws-sb-terraform-state-get
+  - task: configure-aws-sb
+    file:  pcf-automation/pcf-opsman/install-pcf/ci/tasks/configure-aws-sb.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      AZ_COUNT: {{AZ_COUNT}}
+      S3_AWS_SB_TF_STATE_FILE_NAME: {{S3_AWS_SB_TF_STATE_FILE_NAME}}
+      AWS_SB_NETWORK: {{AWS_SB_NETWORK}}
+      AWS_SB_TEMPLATE: {{AWS_SB_TEMPLATE}}
+      AWS_SB_DEFAULT_REGION: {{AWS_SB_DEFAULT_REGION}}
+      AWS_SB_RDS_DEFAULT_REGION: {{AWS_SB_RDS_DEFAULT_REGION}}
+      AWS_SB_RDS_DEFAULT_AZ: {{AWS_SB_RDS_DEFAULT_AZ}}
+      AWS_SB_S3_DEFAULT_REGION: {{AWS_SB_S3_DEFAULT_REGION}}
+      AWS_SB_SQS_DEFAULT_REGION: {{AWS_SB_SQS_DEFAULT_REGION}}
+
+# Upload Splunk Tile
+- name: 4.3.upload-splunk
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-splunk-tile-get
+  - task: upload-splunk
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/upload-splunk.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+- name: 5.3.configure-splunk
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+  - task: configure-splunk
+    file:  pcf-automation/pcf-opsman/install-pcf/ci/tasks/configure-splunk.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      AZ_COUNT: {{AZ_COUNT}}
+      SPLUNK_TEMPLATE: {{SPLUNK_TEMPLATE}} 
+      SPLUNK_JOBS_TEMPLATE: {{SPLUNK_JOBS_TEMPLATE}}
+      SPLUNK_NETWORK: {{SPLUNK_NETWORK}}
+      ADD_APP_INFO: {{ADD_APP_INFO}}
+      CF_API_ENDPOINT: {{CF_API_ENDPOINT}}
+      CF_API_USER: {{CF_API_USER}}
+      CF_API_PASSWORD: {{CF_API_PASSWORD}}
+      FIREHOSE_SUBSCRIPTION_ID: {{FIREHOSE_SUBSCRIPTION_ID}}
+      SPLUNK_TOKEN: {{SPLUNK_TOKEN}}
+      SPLUNK_INDEX: {{SPLUNK_INDEX}}
+      SPLUNK_SERVER: {{SPLUNK_SERVER}}
+      SPLUNK_SSL: {{SPLUNK_SSL}}
+      SPLUNK_SSL_PASSWORD: {{SPLUNK_SSL_PASSWORD}}
+      SPLUNK_SSL_COMMON_NAME: {{SPLUNK_SSL_COMMON_NAME}}
+      SPLUNK_SSL_CERT: {{SPLUNK_SSL_CERT}}
+      SPLUNK_SSL_ROOT_CA: {{SPLUNK_SSL_ROOT_CA}}
+# Upload Datadog Tile
+- name: 4.4.upload-datadog
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-datadog-tile-get
+  - task: upload-datadog
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/upload-datadog.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+- name: 5.4.configure-datadog
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get
+  - task: configure-datadog
+    file:  pcf-automation/pcf-opsman/install-pcf/ci/tasks/configure-datadog.yml
+    params: 
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      AZ_COUNT: {{AZ_COUNT}}
+      DATADOG_TEMPLATE: {{DATADOG_TEMPLATE}}
+      DATADOG_JOBS_TEMPLATE: {{DATADOG_JOBS_TEMPLATE}}
+      DATADOG_NETWORK: {{DATADOG_NETWORK}}
+      BOSHHMFORWARDER_INCOMING_PORT: {{BOSHHMFORWARDER_INCOMING_PORT}}
+      METRON_AGENT_DEPLOYMENT: {{METRON_AGENT_DEPLOYMENT}}
+      DOPPLER_USER: {{DOPPLER_USER}}
+      DOPPLER_USER_PASSWORD: {{DOPPLER_USER_PASSWORD}}
+      INSECURE_SSL_SKIP_VERIFY: {{INSECURE_SSL_SKIP_VERIFY}}
+      SUBSCRIPTION_ID: {{SUBSCRIPTION_ID}}
+      DATADOG_API_URL: {{DATADOG_API_URL}}
+      DATADOG_API_KEY: {{DATADOG_API_KEY}}
+      METRIC_PREFIX: {{METRIC_PREFIX}}
+            
+###########################
+## Job - Deploy ERT      ##
+###########################
+- name: 6.apply-changes
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: apply-changes
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/apply-changes.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+
+# destroy aws
+- name: destroy-aws
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcfawsops-terraform-state-get  
+  - task: destroy-aws
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/destroy-aws.yml
+    params:
+      TF_VAR_aws_access_key: {{AWS_ACCESS_KEY}}
+      TF_VAR_aws_secret_key: {{AWS_SECRET_KEY}}
+      TF_VAR_aws_region: {{AWS_REGION}}
+      TF_VAR_aws_key_name: {{AWS_KEY_NAME}}
+      TF_VAR_aws_cert_arn: {{AWS_CERT_ARN}}
+      TF_VAR_rds_db_username: {{RDS_DB_USERNAME}}
+      TF_VAR_rds_db_password: {{RDS_DB_PASSWORD}}
+      TF_VAR_environment: {{ENVIRONMENT}}
+      TF_VAR_opsman_ami: {{OPSMAN_AMI}}
+      TF_VAR_amis_nat: {{AMIS_NAT}}
+      TF_VAR_az1: {{AZ1}}
+      TF_VAR_az2: {{AZ2}}
+      TF_VAR_az3: {{AZ3}}
+  - put: pcfawsops-terraform-state-put
+    params:
+      file: pcfawsops-terraform-state-put/terraform.tfstate              

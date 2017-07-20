@@ -1,0 +1,29 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rsamban/pcf-om-aws
+inputs:
+  - name: pcf-automation
+  - name: pcfawsops-terraform-state-get
+params:
+  IAAS: replace-me
+  AWS_TEMPLATE_DIR: replace-me
+  PRIVATE_KEY: replace-me
+  RESURRECTOR_ENABLED: replace-me
+  POST_DEPLOY_ENABLED: replace-me
+  BOSH_RECREATE_ON_NEXT_DEPLOY: replace-me
+  RETRY_BOSH_DEPLOYS: replace-me
+  BLOBSTORE_TYPE: replace-me
+  S3_ENDPOINT: replace-me
+  DATABASE_TYPE: replace-me
+  ICMP_ENABLED: replace-me
+  NETWORK1: replace-me
+  NETWORK1_IS_SERVICE: replace-me
+  IP_PREFIX: replace-me
+  SINGLETON_AVAILABILITY_ZONE: replace-me
+  SINGLETON_AVAILABILITY_NETWORK: replace-me
+run:
+  path: pcf-automation/pcf-opsman/install-pcf/ci/scripts/config-director-aws.sh

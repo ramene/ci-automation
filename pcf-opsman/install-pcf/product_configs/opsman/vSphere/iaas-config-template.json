@@ -1,0 +1,12 @@
+{
+    "vcenter_host": "{{vcenter_host}}",
+    "vcenter_username": "{{vcenter_username}}",
+    "vcenter_password": "{{vcenter_password}}",
+    "datacenter": "{{datacenter}}",
+    "disk_type": "{{disk_type}}",
+    "ephemeral_datastores_string": "{{ephemeral_datastores_string}}",
+    "persistent_datastores_string": "{{persistent_datastores_string}}",
+    "bosh_vm_folder": "{{bosh_vm_folder}}",
+    "bosh_template_folder": "{{bosh_template_folder}}",
+    "bosh_disk_path": "{{bosh_disk_path}}"
+}

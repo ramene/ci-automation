@@ -1,0 +1,9 @@
+{
+  "availability_zones": [
+    {
+      "name": "{{AZ1}}",
+      "cluster": "{{CLUSTER1}}",
+      "resource_pool": "{{RESOURCE_POOL1}}"
+    }
+  ]
+}

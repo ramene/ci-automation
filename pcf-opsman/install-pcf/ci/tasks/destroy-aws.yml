@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rsamban/pcf-om-aws
+inputs:
+  - name: pcf-automation
+  - name: pcfawsops-terraform-state-get
+outputs:
+  - name: pcfawsops-terraform-state-put
+run:
+  path: pcf-automation/pcf-opsman/install-pcf/ci/scripts/destroy-aws.sh

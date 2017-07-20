@@ -1,0 +1,144 @@
+groups:
+- name: all
+  jobs:
+  - backup-opsman
+  - start-cloudcontroller
+  - backup-pcf
+  - stop-cloudcontroller
+
+resources:
+- name: version
+  type: semver
+  source:
+    bucket: {{S3_BACKUP_BUCKET}}
+    key: bootstrap-version
+    access_key_id: {{AWS_ACCESS_KEY_ID}}
+    endpoint: {{S3_ENDPOINT}}
+    secret_access_key: {{AWS_SECRET_ACCESS_KEY}}
+    initial_version: 1.0.0
+- name: pcf-backup
+  type: git
+  source:
+    branch: master
+    uri: git@bitbucket.org:sonicdrivein/infra.git
+    private_key: {{GIT_PRIVATE_KEY}}
+
+- name: pcfawsops-terraform-state-get
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY_ID}}
+    secret_access_key: {{AWS_SECRET_ACCESS_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_TF_STATE_BUCKET}}
+    versioned_file: terraform.tfstate
+
+- name: pcfawsops_backup_pcf_put
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY_ID}}
+    secret_access_key: {{AWS_SECRET_ACCESS_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_BACKUP_BUCKET}}
+    regexp: "(.)*-pcf-backup.tgz"
+    #regexp: pcfawsops_backup_pcf_put/"(.)*-pcf-backup.tgz"
+
+- name: pcfawsops_backup_opsman_put
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{AWS_ACCESS_KEY_ID}}
+    secret_access_key: {{AWS_SECRET_ACCESS_KEY}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_BACKUP_BUCKET}}
+    regexp: "(.)*-ops-manager.zip"
+jobs:
+# Export Ops Manager Installation Settings
+- name: backup-opsman
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-backup
+    - get: version
+      params: {bump: major}
+  - task: backup-opsman
+    file: pcf-backup/pcf_automation/backup-pcf/ci/tasks/backup-opsman.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      OPSMAN_PEM: {{OPSMAN_PEM}}
+  - put: pcfawsops_backup_opsman_put
+    params:
+      file: pcfawsops_backup_opsman_put/*-ops-manager.zip
+
+
+# Stop Cloud Controller
+- name: stop-cloudcontroller
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-backup
+    - get: version
+      params: {bump: patch}
+      passed: [backup-opsman]
+      trigger: true
+  - task: stop-cloudcontroller
+    file: pcf-backup/pcf_automation/backup-pcf/ci/tasks/stop-cloudcontroller.yml
+    params:
+      BOSH_DIRECTOR_IP: {{BOSH_DIRECTOR_IP}}
+      ROOT_CA: {{ROOT_CA}}
+      BOSH_CLIENT: {{BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+
+#Backup
+- name: backup-pcf
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-backup
+    - get: version
+      params: {bump: patch}
+      passed: [stop-cloudcontroller]
+      trigger: true
+    - get: pcfawsops-terraform-state-get
+  - task: bckup_pcf
+    file: pcf-backup/pcf_automation/backup-pcf/ci/tasks/backup_pcf.yml
+    params:
+      BOSH_DIRECTOR_IP: {{BOSH_DIRECTOR_IP}}
+      ROOT_CA: {{ROOT_CA}}
+      BOSH_CLIENT: {{BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_PEM: {{OPSMAN_PEM}}
+      AWS_ACCESS_KEY_ID: {{AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: {{AWS_SECRET_ACCESS_KEY}}
+  - put: pcfawsops_backup_pcf_put
+    params:
+      file: pcfawsops_backup_pcf_put/*-pcf-backup.tgz
+# Start Cloud Controller
+- name: start-cloudcontroller
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-backup
+    - get: version
+      params: {bump: patch}
+      passed: [backup-pcf]
+      trigger: true
+  - task: start-cloudcontroller
+    file: pcf-backup/pcf_automation/backup-pcf/ci/tasks/start-cloudcontroller.yml
+    params:
+      BOSH_DIRECTOR_IP: {{BOSH_DIRECTOR_IP}}
+      ROOT_CA: {{ROOT_CA}}
+      BOSH_CLIENT: {{BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+#https://discuss.pivotal.io/hc/en-us/articles/221695507-How-to-log-on-BOSH-in-non-interactive-scripts-Internal-Article-
+#uaac --skip-ssl-validation target https://director_ip:8443
+#uaac token owner get login admin -s CLIENT_SECRET -p USER_PASSWORD
+#        CLIENT_SECRET => Credentials -> Uaa Login Client Credentials
+#        USER_PASSWORD => Uaa Admin User Credentials
+#uaac client add backup.user --scope uaa.none --authorized_grant_types client_credentials --authorities bosh.admin -s backupPwd
+#uaac token client get backup.user -s backupPwd
+#BOSH_CLIENT=backup.user BOSH_CLIENT_SECRET=backupPwd bosh --ca-cert /var/tempest/workspaces/default/root_ca_certificate status

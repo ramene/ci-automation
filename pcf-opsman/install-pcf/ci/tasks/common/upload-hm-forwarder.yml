@@ -1,0 +1,12 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rsamban/pcf-om
+inputs:
+  - name: pcf
+  - name: azure-stemcell
+run:
+  path: pcf/pcf-automation/pcf-opsman/install-pcf/ci/scripts/common/upload-hm-forwarder.sh

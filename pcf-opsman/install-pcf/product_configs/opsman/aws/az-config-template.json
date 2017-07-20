@@ -1,0 +1,13 @@
+{
+  "availability_zones": [
+    {
+      "name": "{{AZ1}}"
+    },
+    {
+      "name": "{{AZ2}}"
+    },
+    {
+      "name": "{{AZ3}}"
+    }
+  ]
+}

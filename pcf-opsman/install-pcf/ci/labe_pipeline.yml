@@ -1,0 +1,211 @@
+groups: 
+- name: all
+  jobs:
+          #  - backup-opsman
+          #  - backup-ert
+  - 1.create-opsman
+  - 2.config-opsman
+  - 3.config-director
+  - 4.upload-ert
+  - 5.configure-ert
+  - apply-changes
+- name: 1.create-opsman
+  jobs:
+  - 1.create-opsman
+- name: 2.config-opsman
+  jobs:
+  - 2.config-opsman
+- name: 3.config-director
+  jobs:
+  - 3.config-director
+- name: 4.upload-ert
+  jobs:
+  - 4.upload-ert
+- name: 5.configure-ert
+  jobs:
+  - 5.configure-ert
+- name: upgrade-ert
+  jobs:
+  - apply-changes
+
+resource_types:
+- name: mypivnet
+  type: docker-image
+  source:
+    repository: rsamban/pivnet
+    tag: "1.0"
+
+resources:
+- name: pcf-automation
+  type: git
+  source:
+    branch: master
+  #    uri: git@192.168.61.5:root/pcf-automation.git
+    uri: git@github.com:rsamban/pcf-automation.git
+    private_key: {{GIT_PRIVATE_KEY}}
+- name: pcf-products
+  type: mypivnet  
+  source:
+    iaas: {{IAAS}}
+    api_token: {{PIVNET_TOKEN}}
+
+
+jobs:
+- name: 1.create-opsman
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-products
+      params:
+        product_slugs:
+        - product_slug: ops-manager
+        product_versions:
+        - product_version: {{OPSMAN_VERSION}}
+  - task: create-opsman
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/create-opsman.yml
+    params:
+      IAAS: {{IAAS}}
+      OPSMAN_VERSION: {{OPSMAN_VERSION}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      VCENTER_HOST: {{VCENTER_HOST}}
+      VCENTER_USER: {{VCENTER_USER}}
+      VCENTER_PASSWORD: {{VCENTER_PASSWORD}}
+      DATACENTER_NAME: {{DATACENTER_NAME}}
+      CLUSTER_NAME: {{CLUSTER_NAME}}
+      HOST_NAME: {{HOST_NAME}}
+      NETWORK_NAME: {{NETWORK_NAME}}
+      DATA_STORE_NAME: {{DATA_STORE_NAME}}
+      OPSMAN_IP: {{OPSMAN_IP}}
+      OPSMAN_NETMASK: {{OPSMAN_NETMASK}}
+      OPSMAN_GATEWAY: {{OPSMAN_GATEWAY}}
+      OPSMAN_DNS: {{OPSMAN_DNS}}
+      OPSMAN_NTP: {{OPSMAN_NTP}}
+      OPSMAN_VM_PASS: {{OPSMAN_VM_PASS}}
+
+- name: 2.config-opsman
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: config-opsman
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/config-opsman.yml
+    params:
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+- name: 3.config-director
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: config-director
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/config-director.yml
+    params:
+      IAAS: {{IAAS}}
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      VSPHERE_TEMPLATE_DIR: "vSphere"
+      VCENTER_HOST: {{VCENTER_HOST}}
+      VCENTER_USER: {{VCENTER_USER}}
+      VCENTER_PASSWORD: {{VCENTER_PASSWORD}}
+      DATACENTER_NAME: {{DATACENTER_NAME}}
+      DATA_STORE_NAME: {{DATA_STORE_NAME}}
+      DISK_TYPE: {{DISK_TYPE}}
+      VM_FOLER: {{VM_FOLER}}
+      TEMPLATE_FOLDER: {{TEMPLATE_FOLDER}}
+      DISK_PATH_FOLDER: {{DISK_PATH_FOLDER}}
+      NTP_SERVERS_STRING: ntp.lab.ecsteam.local
+      RESURRECTOR_ENABLED: true
+      POST_DEPLOY_ENABLED: false
+      BOSH_RECREATE_ON_NEXT_DEPLOY: false
+      RETRY_BOSH_DEPLOYS: false
+      BLOBSTORE_TYPE: Internal
+      DATABASE_TYPE: Internal
+      # vSphere az and network
+      AZ_COUNT: {{AZ_COUNT}}
+      SUBNET_COUNT: {{SUBNET_COUNT}}
+      AZ1: {{AZ1}}
+      CLUSTER1: {{CLUSTER1}}
+      RESOURCE_POOL1: {{RESOURCE_POOL1}}
+      NETWORK1: {{NETWORK1}}
+      NETWORK1_IS_SERVICE: {{NETWORK1_IS_SERVICE}}
+      VSPHERE_NETWORK1: {{VSPHERE_NETWORK1}}
+      NETWORK1_CIDR1: {{NETWORK1_CIDR1}}
+      NETWORK1_RESERVED1: {{NETWORK1_RESERVED1}}
+      NETWORK1_DNS1: {{NETWORK1_DNS1}}
+      NETWORK1_GATEWAY1: {{NETWORK1_GATEWAY1}}
+      NETWORK2: {{NETWORK2}}
+      NETWORK2_IS_SERVICE: {{NETWORK2_IS_SERVICE}}
+      VSPHERE_NETWORK2: {{VSPHERE_NETWORK2}}
+      NETWORK2_CIDR1: {{NETWORK2_CIDR1}}
+      NETWORK2_RESERVED1: {{NETWORK2_RESERVED1}}
+      NETWORK2_DNS1: {{NETWORK2_DNS1}}
+      NETWORK2_GATEWAY1: {{NETWORK2_GATEWAY1}}
+      SINGLETON_AVAILABILITY_ZONE: {{SINGLETON_AVAILABILITY_ZONE}}
+      SINGLETON_NETWORK: {{SINGLETON_NETWORK}}
+
+
+###########################
+## Job - Upload ERT      ##
+###########################
+- name: 4.upload-ert
+  max_in_flight: 1
+  serial_groups: [full]
+  plan:
+  - aggregate:
+    - get: pcf-automation
+    - get: pcf-products
+      trigger: false
+      params:
+        product_slugs:
+        - product_slug: elastic-runtime
+        product_versions:
+        - product_version: {{ERT_VERSION}}
+        product_slug: elastic-runtime
+
+  - task: upload-ert
+    file: pcf-automation/pcf-opsman/install-pcf/ci/tasks/upload-ert.yml
+    params:
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+# configure ert
+#
+- name: 5.configure-ert
+  max_in_flight: 1
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: configure-ert
+    file:  pcf-automation/pcf-opsman/install-pcf/ci/tasks/configure-ert-vSphere.yml
+    params:
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      ERT_SSL_CERT: {{ERT_SSL_CERT}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      ERT_TEMPLATE: {{ERT_TEMPLATE}}
+
+###########################
+## Job - Deploy ERT      ##
+###########################
+- name: apply-changes
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-automation
+  - task: apply-changes
+    file: aws-prepare-get/ci/tasks/apply-changes.yml
+    params:
+      ERT_DOMAIN: {{ERT_DOMAIN}}
+      OPSMAN_HOST: {{OPSMAN_HOST}}
+      OPSMAN_USER: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
