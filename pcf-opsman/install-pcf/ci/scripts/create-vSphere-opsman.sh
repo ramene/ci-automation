@@ -11,7 +11,7 @@ echo "==========================================================================
 echo "Executing ovf command ...."
 vcenter_user=${VCENTER_USER//\\/%5c}
 vcenter_user=${vcenter_user/@/%40}
-vcenter_pass=\"${VCENTER_PASSWORD//\\/%5c}\"
+vcenter_pass=${VCENTER_PASSWORD//\\/%5c}
 vcenter_pass=${vcenter_pass/@/%40}
 
 if [[ $IAAS == "vSphere" ]]; then
@@ -25,14 +25,14 @@ ovf_cmd="ovftool --name='Ops Manager - $OPSMAN_VERSION' \
         --prop:ip0=$OPSMAN_IP \
         --prop:netmask0=$OPSMAN_NETMASK \
         --prop:gateway=$OPSMAN_GATEWAY \
-        --prop:DNS=\"$OPSMAN_DNS\" \
-        --prop:ntp_servers=\"$OPSMAN_NTP\" \
+        --prop:DNS=$OPSMAN_DNS \
+        --prop:ntp_servers=$OPSMAN_NTP \
         --prop:admin_password=$OPSMAN_VM_PASS \
         --noSSLVerify \
         --acceptAllEulas \
         --sourceType=ova \
         $ops_manager_file_name \
-	vi://$vcenter_user:$vcenter_pass@$VCENTER_HOST/$DATACENTER_NAME/host/$CLUSTER_NAME"
+	vi://$VCENTER_USER:$VCENTER_PASSWORD@$VCENTER_HOST/$DATACENTER_NAME/host/$CLUSTER_NAME"
 echo $ovf_cmd
 eval $ovf_cmd
 
