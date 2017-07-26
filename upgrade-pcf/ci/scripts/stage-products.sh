@@ -3,7 +3,7 @@
 set -e
 
 cp /om-alpine /usr/local/bin
-chmod 755 /usr/local/bin/om-alpine
+chmod 755 /usr/local/bin/om-alpine2
 
 function fn_om_linux_curl {
 
