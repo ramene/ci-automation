@@ -28,11 +28,12 @@ ovf_cmd="ovftool --name='Ops Manager - $OPSMAN_VERSION' \
         --prop:DNS=$OPSMAN_DNS \
         --prop:ntp_servers=$OPSMAN_NTP \
         --prop:admin_password=$OPSMAN_VM_PASS \
+	--powerOn \
         --noSSLVerify \
         --acceptAllEulas \
         --sourceType=ova \
         $ops_manager_file_name \
-	vi://$vcenter_user:$vcenter_pass@$VCENTER_HOST/$DATACENTER_NAME/host/$CLUSTER_NAME"
+	vi://$VCENTER_USER:$VCENTER_PASSWORD@$VCENTER_HOST/$DATACENTER_NAME/host/$CLUSTER_NAME"
 echo $ovf_cmd
 eval $ovf_cmd
 
