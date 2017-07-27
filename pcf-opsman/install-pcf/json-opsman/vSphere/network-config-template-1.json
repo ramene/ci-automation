@@ -1,0 +1,37 @@
+{
+    "icmp_checks_enabled": false,
+    "networks": [
+         {
+             "name": "{{NETWORK1}}",
+             "service_network": {{NETWORK1_IS_SERVICE}},
+             "iaas_identifier": "{{VSPHERE_NETWORK1}}",
+             "subnets": [
+                 {
+                     "cidr": "{{NETWORK1_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK1_RESERVED1}}",
+                     "dns": "{{NETWORK1_DNS1}}",
+                     "gateway": "{{NETWORK1_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 }
+             ]
+         },
+         {
+             "name": "{{NETWORK2}}",
+             "service_network": {{NETWORK2_IS_SERVICE}},
+             "iaas_identifier": "{{VSPHERE_NETWORK2}}",
+             "subnets": [
+                 {
+                     "cidr": "{{NETWORK2_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK2_RESERVED1}}",
+                     "dns": "{{NETWORK2_DNS1}}",
+                     "gateway": "{{NETWORK2_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 }
+             ]
+         }
+     ]
+}

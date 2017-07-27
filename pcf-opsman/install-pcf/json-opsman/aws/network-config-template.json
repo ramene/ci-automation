@@ -1,0 +1,77 @@
+{
+    "icmp_checks_enabled": false,
+    "networks": [
+         {
+             "name": "{{NETWORK1}}",
+             "service_network": {{NETWORK1_IS_SERVICE}},
+             "subnets": [
+                 {
+                     "iaas_identifier": "{{deployment_subnet_1}}",
+                     "cidr": "{{ip_prefix}}.16.0/20",
+                     "reserved_ip_ranges": "{{ip_prefix}}.16.0-{{ip_prefix}}.16.10",
+                     "dns": "{{ip_prefix}}.0.2",
+                     "gateway": "{{ip_prefix}}.16.1",
+                     "availability_zones": [
+                         "{{aws_az1}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{deployment_subnet_2}}",
+                     "cidr": "{{ip_prefix}}.32.0/20",
+                     "reserved_ip_ranges": "{{ip_prefix}}.32.0-{{ip_prefix}}.32.10",
+                     "dns": "{{ip_prefix}}.0.2",
+                     "gateway": "{{ip_prefix}}.32.1",
+                     "availability_zones": [
+                         "{{aws_az2}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{deployment_subnet_3}}",
+                     "cidr": "{{ip_prefix}}.48.0/20",
+                     "reserved_ip_ranges": "{{ip_prefix}}.48.0-{{ip_prefix}}.48.10",
+                     "dns": "{{ip_prefix}}.0.2",
+                     "gateway": "{{ip_prefix}}.48.1",
+                     "availability_zones": [
+                         "{{aws_az3}}"
+                     ]
+                 }
+             ]
+         },
+         {
+             "name": "{{NETWORK2}}",
+             "service_network": {{NETWORK2_IS_SERVICE}},
+             "subnets": [
+                 {
+                     "iaas_identifier": "{{services_subnet_1}}",
+                     "cidr": "{{ip_prefix}}.64.0/20",
+                     "reserved_ip_ranges": "{{ip_prefix}}.64.0-{{ip_prefix}}.64.10",
+                     "dns": "{{ip_prefix}}.0.2",
+                     "gateway": "{{ip_prefix}}.64.1",
+                     "availability_zones": [
+                         "{{aws_az1}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{services_subnet_2}}",
+                     "cidr": "{{ip_prefix}}.80.0/20",
+                     "reserved_ip_ranges": "{{ip_prefix}}.80.0-{{ip_prefix}}.80.10",
+                     "dns": "{{ip_prefix}}.0.2",
+                     "gateway": "{{ip_prefix}}.80.1",
+                     "availability_zones": [
+                         "{{aws_az2}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{services_subnet_3}}",
+                     "cidr": "{{ip_prefix}}.96.0/20",
+                     "reserved_ip_ranges": "{{ip_prefix}}.96.0-{{ip_prefix}}.96.10",
+                     "dns": "{{ip_prefix}}.0.2",
+                     "gateway": "{{ip_prefix}}.96.1",
+                     "availability_zones": [
+                         "{{aws_az3}}"
+                     ]
+                 }
+             ]
+         }
+     ]
+}

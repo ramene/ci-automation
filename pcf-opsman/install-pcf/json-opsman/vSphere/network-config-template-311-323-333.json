@@ -1,0 +1,93 @@
+{
+    "icmp_checks_enabled": false,
+    "networks": [
+         {
+             "name": "{{NETWORK1}}",
+             "service_network": {{NETWORK1_IS_SERVICE}},
+             "subnets": [
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK11}}",
+                     "cidr": "{{NETWORK1_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK1_RESERVED1}}",
+                     "dns": "{{NETWORK1_DNS1}}",
+                     "gateway": "{{NETWORK1_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 }
+             ]
+         },
+         {
+             "name": "{{NETWORK2}}",
+             "service_network": {{NETWORK2_IS_SERVICE}},
+             "subnets": [
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK21}}",
+                     "cidr": "{{NETWORK2_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK2_RESERVED1}}",
+                     "dns": "{{NETWORK2_DNS1}}",
+                     "gateway": "{{NETWORK2_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK22}}",
+                     "cidr": "{{NETWORK2_CIDR2}}",
+                     "reserved_ip_ranges": "{{NETWORK2_RESERVED2}}",
+                     "dns": "{{NETWORK2_DNS2}}",
+                     "gateway": "{{NETWORK2_GATEWAY2}}",
+                     "availability_zones": [
+                         "{{AZ2}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK23}}",
+                     "cidr": "{{NETWORK2_CIDR3}}",
+                     "reserved_ip_ranges": "{{NETWORK2_RESERVED3}}",
+                     "dns": "{{NETWORK2_DNS3}}",
+                     "gateway": "{{NETWORK2_GATEWAY3}}",
+                     "availability_zones": [
+                         "{{AZ3}}"
+                     ]
+                 }
+             ]
+         },
+         {
+             "name": "{{NETWORK3}}",
+             "service_network": {{NETWORK3_IS_SERVICE}},
+             "subnets": [
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK31}}",
+                     "cidr": "{{NETWORK3_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK3_RESERVED1}}",
+                     "dns": "{{NETWORK3_DNS1}}",
+                     "gateway": "{{NETWORK3_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK32}}",
+                     "cidr": "{{NETWORK3_CIDR2}}",
+                     "reserved_ip_ranges": "{{NETWORK3_RESERVED2}}",
+                     "dns": "{{NETWORK3_DNS2}}",
+                     "gateway": "{{NETWORK3_GATEWAY2}}",
+                     "availability_zones": [
+                         "{{AZ2}}"
+                     ]
+                 },
+                 {
+                     "iaas_identifier": "{{VSPHERE_NETWORK33}}",
+                     "cidr": "{{NETWORK3_CIDR3}}",
+                     "reserved_ip_ranges": "{{NETWORK3_RESERVED3}}",
+                     "dns": "{{NETWORK3_DNS3}}",
+                     "gateway": "{{NETWORK3_GATEWAY3}}",
+                     "availability_zones": [
+                         "{{AZ3}}"
+                     ]
+                 }
+             ]
+         }
+     ]
+}

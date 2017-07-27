@@ -1,0 +1,73 @@
+{
+    "icmp_checks_enabled": false,
+    "networks": [
+         {
+             "name": "{{NETWORK1}}",
+             "service_network": {{NETWORK1_IS_SERVICE}},
+             "iaas_identifier": "{{VSPHERE_NETWORK1}}",
+             "subnets": [
+                 {
+                     "cidr": "{{NETWORK1_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK1_RESERVED1}}",
+                     "dns": "{{NETWORK1_DNS1}}",
+                     "gateway": "{{NETWORK1_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 },
+                 {
+                     "cidr": "{{NETWORK1_CIDR2}}",
+                     "reserved_ip_ranges": "{{NETWORK1_RESERVED2}}",
+                     "dns": "{{NETWORK1_DNS2}}",
+                     "gateway": "{{NETWORK1_GATEWAY2}}",
+                     "availability_zones": [
+                         "{{AZ2}}"
+                     ]
+                 },
+                 {
+                     "cidr": "{{NETWORK1_CIDR3}}",
+                     "reserved_ip_ranges": "{{NETWORK1_RESERVED3}}",
+                     "dns": "{{NETWORK1_DNS3}}",
+                     "gateway": "{{NETWORK1_GATEWAY3}}",
+                     "availability_zones": [
+                         "{{AZ3}}"
+                     ]
+                 }
+             ]
+         },
+         {
+             "name": "{{NETWORK2}}",
+             "service_network": {{NETWORK2_IS_SERVICE}},
+             "iaas_identifier": "{{VSPHERE_NETWORK2}}",
+             "subnets": [
+                 {
+                     "cidr": "{{NETWORK2_CIDR1}}",
+                     "reserved_ip_ranges": "{{NETWORK2_RESERVED1}}",
+                     "dns": "{{NETWORK2_DNS1}}",
+                     "gateway": "{{NETWORK2_GATEWAY1}}",
+                     "availability_zones": [
+                         "{{AZ1}}"
+                     ]
+                 },
+                 {
+                     "cidr": "{{NETWORK2_CIDR2}}",
+                     "reserved_ip_ranges": "{{NETWORK2_RESERVED2}}",
+                     "dns": "{{NETWORK2_DNS2}}",
+                     "gateway": "{{NETWORK2_GATEWAY2}}",
+                     "availability_zones": [
+                         "{{AZ2}}"
+                     ]
+                 },
+                 {
+                     "cidr": "{{NETWORK2_CIDR3}}",
+                     "reserved_ip_ranges": "{{NETWORK2_RESERVED3}}",
+                     "dns": "{{NETWORK2_DNS3}}",
+                     "gateway": "{{NETWORK2_GATEWAY3}}",
+                     "availability_zones": [
+                         "{{AZ3}}"
+                     ]
+                 }
+             ]
+         }
+     ]
+}
