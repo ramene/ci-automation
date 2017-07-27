@@ -14,7 +14,7 @@
   },
   "properties": {
     "properties": {
-      "uaa.properties.uaa": {
+      ".uaa": {
         "value": "ldap"
       },
       ".cloud_controller.system_domain": {
