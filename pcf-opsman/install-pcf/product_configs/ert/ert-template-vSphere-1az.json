@@ -13,12 +13,10 @@
     }
   },
   "properties": {
-    "uaa": {
-      ".properties.uaa": {
-        "value": "ldap"
-        }
-    },
     "properties": {
+      "uaa.properties.uaa": {
+        "value": "ldap"
+      },
       ".cloud_controller.system_domain": {
         "value": "system.{{pcf_ert_domain}}"
       },
