@@ -8,9 +8,9 @@ image_resource:
 inputs:
   - name: pcf-automation
 params:
-  OPSMAN_HOST: replace-me
-  OPSMAN_USER: replace-me
-  OPSMAN_PASS: replace-me
+  OPSMAN_HOST: {{OPSMAN_HOST}}
+  OPSMAN_USER: {{OPSMAN_USER}}
+  OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
           
 run:
   path: pcf-automation/pcf-opsman/install-pcf/ci/scripts/config-opsman.sh
