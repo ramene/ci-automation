@@ -32,9 +32,6 @@
           "private_key_pem": "{{pcf_ert_ssl_key}}"
           }
       },
-      ".properties.uaa": {
-        "value": "ldap"
-      },
       ".ha_proxy.skip_cert_verify": {
         "value": true
       },
