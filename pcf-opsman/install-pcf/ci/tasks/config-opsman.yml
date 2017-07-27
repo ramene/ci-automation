@@ -12,6 +12,6 @@ params:
   OPSMAN_HOST: 172.28.72.5
   OPSMAN_USER: admin  
   OPSMAN_PASSWORD: welcome1
-          
+
 run:
   path: pcf-automation/pcf-opsman/install-pcf/ci/scripts/config-opsman.sh
