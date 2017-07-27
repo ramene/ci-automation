@@ -18,10 +18,10 @@ if [[ $IAAS == "vSphere" ]]; then
     ops_manager_file_name=$(ls pcf-products/*.ova)
 fi
 
-ovf_cmd="ovftool --name='Ops Manager - $OPSMAN_VERSION' \
+ovf_cmd="ovftool --name='pcf-vsphere-$OPSMAN_VERSION' \
         -nw=$NETWORK_NAME \
         -ds=$DATA_STORE_NAME \
-        -dm=thin \
+        -dm=$DISK_TYPE \
         --prop:ip0=$OPSMAN_IP \
         --prop:netmask0=$OPSMAN_NETMASK \
         --prop:gateway=$OPSMAN_GATEWAY \
