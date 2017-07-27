@@ -8,7 +8,7 @@ image_resource:
 inputs:
   - name: pcf-automation
 params:
-  OPSMAN_HOST: 172.28.71.5
+  OPSMAN_HOST: 172.28.72.5
   OPSMAN_USER: admin  
   OPSMAN_PASSWORD: welcome1
           
