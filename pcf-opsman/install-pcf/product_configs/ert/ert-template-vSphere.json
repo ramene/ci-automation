@@ -2,12 +2,10 @@
   "networks_and_azs":{
     "networks_and_azs": {
       "singleton_availability_zone": {
-        "name": "{{AZ2}}"
+        "name": "{{AZ1}}"
       },
       "other_availability_zones": [
-        { "name": "{{AZ1}}" },
-        { "name": "{{AZ2}}" },
-        { "name": "{{AZ3}}" }
+        { "name": "{{AZ1}}" }
       ],
       "network": {
         "name": "deployment"
@@ -108,7 +106,7 @@
         "value": "{{s3_endpoint}}"
       },
       ".push-apps-manager.company_name": {
-        "value": "Sonic"
+        "value": "FirstData"
       },
       ".properties.syslog_protocol": {
         "value": "tcp"
