@@ -14,9 +14,9 @@
   },
   "properties": {
     "properties": {
-      "uaa.properties.uaa" : {
+      "properties.uaa" : {
         "value": {
-          "select_value": "ldap"
+          "select": "ldap"
         }
       },
       ".uaa.service_provider_key_credentials": {
