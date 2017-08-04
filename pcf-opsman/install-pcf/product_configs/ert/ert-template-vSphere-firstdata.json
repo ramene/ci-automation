@@ -13,6 +13,9 @@
     }
   },
   "properties": {
+    ".properties.uaa": {
+        "value": "ldap"
+    },
     "properties": {
       ".cloud_controller.system_domain": {
         "value": "system.{{pcf_ert_domain}}"
