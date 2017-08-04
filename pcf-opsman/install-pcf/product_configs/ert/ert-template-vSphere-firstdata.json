@@ -15,9 +15,9 @@
   "properties": {
     "properties": {
       "uaa.properties.uaa" : {
-        "value": [
+        "selected": [
           {
-            "selected": "ldap"
+            "value": "ldap"
           }
         ]
       },
