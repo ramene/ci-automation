@@ -14,11 +14,8 @@
   },
   "properties": {
     "properties": {
-      "uaa.properties.uaa": {
+      "uaa": {
         "value": "ldap"
-      },
-      "uaa.properties.uaa.ldap.url": {
-        "value": "ldaps://NALDAPS.1DC.COM:3269"
       },
       ".properties.uaa.ldap.credentials": {
         "value": {
