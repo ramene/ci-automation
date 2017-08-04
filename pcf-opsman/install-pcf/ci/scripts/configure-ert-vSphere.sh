@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-
 cp /om-alpine /usr/local/bin
 
 CWD=$(pwd)
