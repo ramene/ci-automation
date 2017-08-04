@@ -14,10 +14,12 @@
   },
   "properties": {
     "properties": {
-      "properties.uaa" : {
-        "value": {
-          "select": "ldap"
-        }
+      "uaa.properties.uaa" : {
+        "value": [
+          {
+            "selected": "ldap"
+          }
+        ]
       },
       ".uaa.service_provider_key_credentials": {
         "value": {
