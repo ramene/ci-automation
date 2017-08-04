@@ -1,4 +1,6 @@
 {
+  "uaa.properties.uaa": "ldap",
+
   "networks_and_azs":{
     "networks_and_azs": {
       "singleton_availability_zone": {
@@ -13,10 +15,10 @@
     }
   },
   "properties": {
-    "uaa.properties.uaa": {
-        "value": "ldap"
-    },
     "properties": {
+      ".properties.uaa.internal.password_min_length": {
+        "value": "8"
+      },
       ".cloud_controller.system_domain": {
         "value": "system.{{pcf_ert_domain}}"
       },
@@ -28,7 +30,7 @@
       },
       ".properties.networking_point_of_entry": {
         "value": "haproxy"
-        },
+      },
       ".properties.networking_point_of_entry.haproxy.ssl_rsa_certificate": {
         "value": {
           "cert_pem": "{{pcf_ert_ssl_cert}}",
