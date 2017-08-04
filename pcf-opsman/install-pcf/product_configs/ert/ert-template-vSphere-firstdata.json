@@ -13,7 +13,7 @@
     }
   },
   "properties": {
-    ".properties.uaa": {
+    "uaa.properties.uaa": {
         "value": "ldap"
     },
     "properties": {
