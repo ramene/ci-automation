@@ -11,7 +11,7 @@ function fn_om_linux_curl {
     local curl_path=${2}
     local curl_data=${3}
 
-     curl_cmd="./om-alpine --target https://$OPSMAN_HOST -k --username \"$OPSMAN_USER\" --password \"$OPSMAN_PASSWORD\"  \
+     curl_cmd="om-alpine --target https://$OPSMAN_HOST -k --username \"$OPSMAN_USER\" --password \"$OPSMAN_PASSWORD\"  \
             curl --request ${curl_method} --path ${curl_path}"
 
     if [[ ! -z ${curl_data} ]]; then
