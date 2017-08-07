@@ -44,7 +44,7 @@ if [[ ! -f ${json_file} ]]; then
   exit 1
 fi
 
-echo "fksdfjlsdkfjl;sdkfj;ldsfjfl;sdfjsdljkflksdfjk;lsfkjskljfkl;sdfsdlfjl;sdflsdfjsld;fj;lsdfjls;dfjldsf $pcf_ert_ssl_cert"
+echo "fksdfjlsdkfjl;sdkfj;ldsfjfl;sdfjsdljkflksdfjk;lsfkjskljfkl;sdfsdlfjl;sdflsdfjsld;fj;lsdfjls;dfjldsf ${pcf_ert_ssl_cert}"
 
 
 if [[ "$authentication_mode" == "ldap" ]]; then
