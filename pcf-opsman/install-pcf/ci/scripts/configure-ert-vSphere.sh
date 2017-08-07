@@ -145,10 +145,10 @@ fi
 
 $CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
 
-
 # Set ERT Properties
 echo "=============================================================================================="
 echo "Setting Properties for: ${guid_cf}"
+echo "============================================ I fully expected this to fail"
 echo "=============================================================================================="
 
 json_properties=$(cat ${json_file} | jq .properties)
