@@ -83,8 +83,8 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   },
   ".properties.uaa.service_provider_key_credentials": {
     "value": {
-      "cert_pem": "$my_pcf_ert_ssl_cert",
-      "private_key_pem": "$my_pcf_ert_ssl_key"
+      "cert_pem": "$pcf_ert_ssl_cert",
+      "private_key_pem": "$pcf_ert_ssl_key"
     }
   }
 }
