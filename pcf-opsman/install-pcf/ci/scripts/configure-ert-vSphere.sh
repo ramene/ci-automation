@@ -86,8 +86,8 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   },
   ".properties.uaa.ldap.service_provider_key_credentials": {
     "value": {
-      "cert_pem": "$SVCPROVIDER_SSL_CERT",
-      "private_key_pem": "$SVCPROVIDER_SSL_KEY"
+      "cert_pem": "$pcf_ert_ssl_cert",
+      "private_key_pem": "$pcf_ert_ssl_key"
     }
   }
 }
