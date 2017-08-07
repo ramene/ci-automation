@@ -82,8 +82,8 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
     "value": "$LAST_NAME_ATTR"
   },
   ".properties.uaa.service_provider_key_credentials": {
-    "cert_pem": "$SVCPROVIDER_SSL_CERT",
-    "private_key_pem": "$SVCPROVIDER_SSL_KEY"
+    "cert_pem": "$my_pcf_ert_ssl_cert",
+    "private_key_pem": "$my_pcf_ert_ssl_key"
   }
 }
 EOF
@@ -142,16 +142,6 @@ echo "==========================================================================
 
 json_net_and_az=$(cat ${json_file} | jq .networks_and_azs)
 fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_cf}/networks_and_azs" "${json_net_and_az}"
-
-
-# Configure ERT Properly
-echo "=============================================================================================="
-echo "-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/"
-echo "Setting Authentication Configuration for ERT: ${guid_cf}"
-echo "-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/"
-echo "=============================================================================================="
-
-echo "-/-\-/-\-/-\-/-\-/-\ Authentication: $authentication_mode"
 
 # Set ERT Properties
 echo "=============================================================================================="
