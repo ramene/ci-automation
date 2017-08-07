@@ -57,6 +57,9 @@ EOF
 
   echo "Using self signed certificates generated using Ops Manager..."
 
+  echo "\n$SSL_CERT\n"
+  echo "\n$SSL_PRIVATE_KEY\n"
+
 fi
 
 
