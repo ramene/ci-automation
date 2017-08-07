@@ -5,7 +5,7 @@ cp /om-alpine /usr/local/bin
 
 CWD=$(pwd)
 
-CMD=om-cli/om-alpine
+CMD=om-alpine
 
 # Set JSON Config Template and inster Concourse Parameter Values
 json_file_path="pcf-automation/pcf-opsman/install-pcf/product_configs/ert"
