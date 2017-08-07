@@ -73,7 +73,7 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   ".properties.uaa": {
     "value": "ldap"
   },
-  ".uaa.ldap.service_provider_key_credentials": {
+  "properties.uaa.uaa.ldap.service_provider_key_credentials": {
     "value": {
       "cert_pem": "$SSL_CERT",
       "private_key_pem": "$SSL_PRIVATE_KEY"
