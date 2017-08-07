@@ -97,7 +97,9 @@ fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_cf}/networks_and_azs" "${
 
 # Configure ERT Properly
 echo "=============================================================================================="
-echo "Setting Configuration for: ${guid_cf}"
+echo "-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/"
+echo "Setting Authentication Configuration for: ${guid_cf}"
+echo "-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/"
 echo "=============================================================================================="
 
 if [[ "$AUTHENTICATION_MODE" == "ldap" ]]; then
