@@ -83,7 +83,7 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   },
   ".properties.uaa.ldap.last_name_attribute": {
     "value": "$LAST_NAME_ATTR"
-  }
+  },
   ".properties.uaa.ldap.server_ssl_cert": {
     "value": "$pcf_ert_ssl_cert"
   }
