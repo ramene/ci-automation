@@ -81,10 +81,10 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   ".properties.uaa.ldap.last_name_attribute": {
     "value": "$LAST_NAME_ATTR"
   },
-  "properties.uaa.service_provider_key_credentials": {
+  ".properties.uaa.service_provider_key_credentials": {
     "value": {
-      "cert_pem": "$SVCPROVIDER_SSL_CERT",
-      "private_key_pem": "$SVCPROVIDER_SSL_KEY"
+      "cert_pem": "$my_pcf_ert_ssl_cert",
+      "private_key_pem": "$my_pcf_ert_ssl_key"
     }
   }
 }
