@@ -8,4 +8,4 @@ image_resource:
 inputs:
   - name: pcf-automation
 run:
-  path:  pcf-automation/pcf-opsman/install-pcf/ci/scripts/configure-ert-vSphere.sh
+  path:  pcf-automation/pcf-opsman/install-pcf/ci/scripts/configure-ert-vSphere.1.sh
