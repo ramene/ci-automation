@@ -57,7 +57,7 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   ".properties.uaa.ldap.credentials": {
     "value": {
       "identity": "$LDAP_USER",
-      "password": "$LDAP_PWD"
+      "password": "$LDAP_PASSWORD"
     }
   },
   ".properties.uaa.ldap.search_base": {
