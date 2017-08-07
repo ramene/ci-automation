@@ -44,11 +44,24 @@ if [[ ! -f ${json_file} ]]; then
   exit 1
 fi
 
+
+DOMAINS=$(cat <<-EOF
+  {"domains": ["*.$ERT_DOMAIN", "*.$ERT_DOMAIN", "*.login.$ERT_DOMAIN", "*.uaa.$ERT_DOMAIN"] }
+EOF
+)
+
+  CERTIFICATES=`$CMD -t https://$OPS_MGR_HOST -u $OPS_MGR_USR -p $OPS_MGR_PWD -k curl -p "$OPS_MGR_GENERATE_SSL_ENDPOINT" -x POST -d "$DOMAINS"`
+
+  export SSL_CERT=`echo $CERTIFICATES | jq '.certificate' | tr -d '"'`
+  export SSL_PRIVATE_KEY=`echo $CERTIFICATES | jq '.key' | tr -d '"'`
+
+  echo "Using self signed certificates generated using Ops Manager..."
+
+fi
+
+
 echo "\n$SVCPROVIDER_SSL_CERT\n"
 echo "\n$SVCPROVIDER_SSL_KEY\n"
-
-echo "\n$my_pcf_ert_ssl_cert\n"
-echo "\n$my_pcf_ert_ssl_key\n"
 
 if [[ "$authentication_mode" == "ldap" ]]; then
 echo "Configuring LDAP Authentication in ERT..."
@@ -86,12 +99,6 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   },
   ".properties.uaa.ldap.last_name_attribute": {
     "value": "$LAST_NAME_ATTR"
-  },
-  ".properties.uaa.service_provider_key_credentials": {
-    "value": {
-      "cert_pem": "$my_pcf_ert_ssl_cert",
-      "private_key_pem": "$my_pcf_ert_ssl_key"
-    }
   }
 }
 EOF
