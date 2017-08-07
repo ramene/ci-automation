@@ -44,6 +44,51 @@ if [[ ! -f ${json_file} ]]; then
   exit 1
 fi
 
+if [[ "$authentication_mode" == "ldap" ]]; then
+echo "Configuring LDAP Authentication in ERT..."
+CF_AUTH_PROPERTIES=$(cat <<-EOF
+{
+  ".properties.uaa": {
+    "value": "ldap"
+  },
+  ".properties.uaa.ldap.url": {
+    "value": "$LDAP_URL"
+  },
+  ".properties.uaa.ldap.credentials": {
+    "value": {
+      "identity": "$LDAP_USER",
+      "password": "$LDAP_PWD"
+    }
+  },
+  ".properties.uaa.ldap.search_base": {
+    "value": "$SEARCH_BASE"
+  },
+  ".properties.uaa.ldap.search_filter": {
+    "value": "$SEARCH_FILTER"
+  },
+  ".properties.uaa.ldap.group_search_base": {
+    "value": "$GROUP_SEARCH_BASE"
+  },
+  ".properties.uaa.ldap.group_search_filter": {
+    "value": "$GROUP_SEARCH_FILTER"
+  },
+  ".properties.uaa.ldap.mail_attribute_name": {
+    "value": "$MAIL_ATTR_NAME"
+  },
+  ".properties.uaa.ldap.first_name_attribute": {
+    "value": "$FIRST_NAME_ATTR"
+  },
+  ".properties.uaa.ldap.last_name_attribute": {
+    "value": "$LAST_NAME_ATTR"
+  }
+}
+EOF
+)
+
+fi
+$CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
+
+
 function fn_om_linux_curl {
 
     local curl_method=${1}
@@ -103,51 +148,6 @@ echo "-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/
 echo "=============================================================================================="
 
 echo "-/-\-/-\-/-\-/-\-/-\ Authentication: $authentication_mode"
-
-if [[ "$authentication_mode" == "ldap" ]]; then
-echo "Configuring LDAP Authentication in ERT..."
-CF_AUTH_PROPERTIES=$(cat <<-EOF
-{
-  ".properties.uaa": {
-    "value": "ldap"
-  },
-  ".properties.uaa.ldap.url": {
-    "value": "$LDAP_URL"
-  },
-  ".properties.uaa.ldap.credentials": {
-    "value": {
-      "identity": "$LDAP_USER",
-      "password": "$LDAP_PWD"
-    }
-  },
-  ".properties.uaa.ldap.search_base": {
-    "value": "$SEARCH_BASE"
-  },
-  ".properties.uaa.ldap.search_filter": {
-    "value": "$SEARCH_FILTER"
-  },
-  ".properties.uaa.ldap.group_search_base": {
-    "value": "$GROUP_SEARCH_BASE"
-  },
-  ".properties.uaa.ldap.group_search_filter": {
-    "value": "$GROUP_SEARCH_FILTER"
-  },
-  ".properties.uaa.ldap.mail_attribute_name": {
-    "value": "$MAIL_ATTR_NAME"
-  },
-  ".properties.uaa.ldap.first_name_attribute": {
-    "value": "$FIRST_NAME_ATTR"
-  },
-  ".properties.uaa.ldap.last_name_attribute": {
-    "value": "$LAST_NAME_ATTR"
-  }
-}
-EOF
-)
-
-fi
-
-$CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
 
 # Set ERT Properties
 echo "=============================================================================================="
