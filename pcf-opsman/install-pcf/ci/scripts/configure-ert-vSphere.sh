@@ -44,6 +44,9 @@ if [[ ! -f ${json_file} ]]; then
   exit 1
 fi
 
+echo "fksdfjlsdkfjl;sdkfj;ldsfjfl;sdfjsdljkflksdfjk;lsfkjskljfkl;sdfsdlfjl;sdflsdfjsld;fj;lsdfjls;dfjldsf $pcf_ert_ssl_cert"
+
+
 if [[ "$authentication_mode" == "ldap" ]]; then
 echo "Configuring LDAP Authentication in ERT..."
 CF_AUTH_PROPERTIES=$(cat <<-EOF
@@ -80,12 +83,9 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   },
   ".properties.uaa.ldap.last_name_attribute": {
     "value": "$LAST_NAME_ATTR"
-  },
-  ".properties.uaa.service_provider_key_credentials": {
-    "value": {
-      "cert_pem": "$pcf_ert_ssl_cert",
-      "private_key_pem": "$pcf_ert_ssl_key"
-    }
+  }
+  ".properties.uaa.ldap.server_ssl_cert": {
+    "value": "$pcf_ert_ssl_cert"
   }
 }
 EOF
