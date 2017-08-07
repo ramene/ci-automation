@@ -47,6 +47,10 @@ fi
 echo "\n$SVCPROVIDER_SSL_CERT\n"
 echo "\n$SVCPROVIDER_SSL_KEY\n"
 
+echo "\n$pcf_ert_ssl_cert\n"
+echo "\n$pcf_ert_ssl_key\n"
+
+pcf_ert_ssl_cert
 if [[ "$authentication_mode" == "ldap" ]]; then
 echo "Configuring LDAP Authentication in ERT..."
 CF_AUTH_PROPERTIES=$(cat <<-EOF
