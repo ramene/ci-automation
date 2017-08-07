@@ -5,6 +5,8 @@ cp /om-alpine /usr/local/bin
 
 CWD=$(pwd)
 
+CMD=om-cli/om-alpine
+
 # Set JSON Config Template and inster Concourse Parameter Values
 json_file_path="pcf-automation/pcf-opsman/install-pcf/product_configs/ert"
 json_file_template="${json_file_path}/${ERT_TEMPLATE}"
@@ -24,7 +26,6 @@ fi
 
 my_pcf_ert_ssl_cert=$(echo ${ERT_SSL_CERT} | sed 's/\s\+/\\\\r\\\\n/g' | sed 's/\\\\r\\\\nCERTIFICATE/ CERTIFICATE/g')
 my_pcf_ert_ssl_key=$(echo ${ERT_SSL_KEY} | sed 's/\s\+/\\\\r\\\\n/g' | sed 's/\\\\r\\\\nRSA\\\\r\\\\nPRIVATE\\\\r\\\\nKEY/ RSA PRIVATE KEY/g')
-
 
 sed -i -e "s|{{pcf_ert_ssl_cert}}|${my_pcf_ert_ssl_cert}|g" ${json_file}
 sed -i -e "s|{{pcf_ert_ssl_key}}|${my_pcf_ert_ssl_key}|g" ${json_file}
@@ -92,6 +93,58 @@ echo "==========================================================================
 
 json_net_and_az=$(cat ${json_file} | jq .networks_and_azs)
 fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_cf}/networks_and_azs" "${json_net_and_az}"
+
+
+# Configure ERT Properly
+echo "=============================================================================================="
+echo "Setting Configuration for: ${guid_cf}"
+echo "=============================================================================================="
+
+if [[ "$AUTHENTICATION_MODE" == "ldap" ]]; then
+echo "Configuring LDAP Authentication in ERT..."
+CF_AUTH_PROPERTIES=$(cat <<-EOF
+{
+  ".properties.uaa": {
+    "value": "ldap"
+  },
+  ".properties.uaa.ldap.url": {
+    "value": "$LDAP_URL"
+  },
+  ".properties.uaa.ldap.credentials": {
+    "value": {
+      "identity": "$LDAP_USER",
+      "password": "$LDAP_PWD"
+    }
+  },
+  ".properties.uaa.ldap.search_base": {
+    "value": "$SEARCH_BASE"
+  },
+  ".properties.uaa.ldap.search_filter": {
+    "value": "$SEARCH_FILTER"
+  },
+  ".properties.uaa.ldap.group_search_base": {
+    "value": "$GROUP_SEARCH_BASE"
+  },
+  ".properties.uaa.ldap.group_search_filter": {
+    "value": "$GROUP_SEARCH_FILTER"
+  },
+  ".properties.uaa.ldap.mail_attribute_name": {
+    "value": "$MAIL_ATTR_NAME"
+  },
+  ".properties.uaa.ldap.first_name_attribute": {
+    "value": "$FIRST_NAME_ATTR"
+  },
+  ".properties.uaa.ldap.last_name_attribute": {
+    "value": "$LAST_NAME_ATTR"
+  }
+}
+EOF
+)
+
+fi
+
+$CMD -t https://$OPS_MGR_HOST -u $OPS_MGR_USR -p $OPS_MGR_PWD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
+
 
 # Set ERT Properties
 echo "=============================================================================================="
