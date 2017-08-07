@@ -102,7 +102,9 @@ echo "Setting Authentication Configuration for ERT: ${guid_cf}"
 echo "-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/-\-/"
 echo "=============================================================================================="
 
-if [[ "$AUTHENTICATION_MODE" == "ldap" ]]; then
+echo "-/-\-/-\-/-\-/-\-/-\ Authentication: $authentication_mode"
+
+if [[ "$authentication_mode" == "ldap" ]]; then
 echo "Configuring LDAP Authentication in ERT..."
 CF_AUTH_PROPERTIES=$(cat <<-EOF
 {
