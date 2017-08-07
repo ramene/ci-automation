@@ -50,7 +50,7 @@ DOMAINS=$(cat <<-EOF
 EOF
 )
 
-  CERTIFICATES=`$CMD -t https://$OPS_MGR_HOST -u $OPS_MGR_USR -p $OPS_MGR_PWD -k curl -p "$OPS_MGR_GENERATE_SSL_ENDPOINT" -x POST -d "$DOMAINS"`
+  CERTIFICATES=`$CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k curl -p "/api/v0/certificates/generate" -x POST -d "$DOMAINS"`
 
   export SSL_CERT=`echo $CERTIFICATES | jq '.certificate' | tr -d '"'`
   export SSL_PRIVATE_KEY=`echo $CERTIFICATES | jq '.key' | tr -d '"'`
