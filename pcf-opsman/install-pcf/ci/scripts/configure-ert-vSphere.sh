@@ -47,8 +47,8 @@ fi
 echo "\n$SVCPROVIDER_SSL_CERT\n"
 echo "\n$SVCPROVIDER_SSL_KEY\n"
 
-echo "\n$pcf_ert_ssl_cert\n"
-echo "\n$pcf_ert_ssl_key\n"
+echo "\n$my_pcf_ert_ssl_cert\n"
+echo "\n$my_pcf_ert_ssl_key\n"
 
 if [[ "$authentication_mode" == "ldap" ]]; then
 echo "Configuring LDAP Authentication in ERT..."
@@ -87,10 +87,10 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   ".properties.uaa.ldap.last_name_attribute": {
     "value": "$LAST_NAME_ATTR"
   },
-  ".properties.uaa.ldap.service_provider_key_credentials": {
+  ".properties.uaa.service_provider_key_credentials": {
     "value": {
-      "cert_pem": "$pcf_ert_ssl_cert",
-      "private_key_pem": "$pcf_ert_ssl_key"
+      "cert_pem": "$my_pcf_ert_ssl_cert",
+      "private_key_pem": "$my_pcf_ert_ssl_key"
     }
   }
 }
