@@ -131,7 +131,7 @@ function om_stack_trace {
           -configure-product"
 
   if [[ ! -z ${cf_properties} ]]; then
-      om="${om} -n cf -p '${cf_properties}'"
+      om="${om} -n cf] -p '${cf_properties}'"
   fi
 
   echo ${om} > /tmp/rqst_om_cmd.log
