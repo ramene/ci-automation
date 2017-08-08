@@ -2,11 +2,8 @@
   "networks_and_azs":{
     "networks_and_azs": {
       "singleton_availability_zone": {
-        "name": "{{az1}}"
+        "name": "{{RABBITMQ_SINGLETON_AZ}}"
       },
-      "other_availability_zones": [
-        { "name": "{{az1}}" }
-      ],
       "network": {
         "name": "{{RABBITMQ_NETWORK}}"
       }
@@ -15,10 +12,7 @@
   "properties": {
     "properties": {
       ".rabbitmq-server.server_admin_credentials": {
-          "value": {"identity": "{{rabbitmq_admin_username}}", "password": "{{rabbitmq_admin_password}}"}
-        },
-      ".rabbitmq-broker.dns_host": {
-        "value": "{{rabbitmq_external_lb_dns_name}}"
+        "value": {"identity": "{{rabbitmq_admin_username}}", "password": "{{rabbitmq_admin_password}}"}
       }
     }
   },
