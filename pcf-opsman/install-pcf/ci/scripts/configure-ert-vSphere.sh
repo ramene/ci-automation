@@ -60,6 +60,13 @@ echo "Using self signed certificates generated using Ops Manager..."
 echo "\n$SSL_CERT\n"
 echo "\n$SSL_PRIVATE_KEY\n"
 
+echo "Using self signed certificates generated using Ops Manager for ERT..."
+
+echo "\n$ERT_SSL_CERT\n"
+echo "\n$ERT_SSL_KEY\n"
+
+echo "Using self signed certificates generated using Ops Manager for Service Provider Credentials..."
+
 echo "\n$SVCPROVIDER_SSL_CERT\n"
 echo "\n$SVCPROVIDER_SSL_KEY\n"
 
