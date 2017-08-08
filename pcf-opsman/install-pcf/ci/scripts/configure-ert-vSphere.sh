@@ -118,8 +118,6 @@ EOF
 fi
 
 # $CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
-echo "hello world"
-
 
 function om_stack_trace {
   
@@ -130,7 +128,7 @@ function om_stack_trace {
           -u \"$OPSMAN_USER\" \
           -p \"$OPSMAN_PASSWORD\" \
           -k \
-          -configure-product"
+          configure-product"
 
   if [[ ! -z ${cf_properties} ]]; then
       om="${om} -n cf -p '${cf_properties}'"
