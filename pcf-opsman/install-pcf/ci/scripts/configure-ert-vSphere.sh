@@ -128,17 +128,17 @@ function om_stack_trace {
           -u \"$OPSMAN_USER\" \
           -p \"$OPSMAN_PASSWORD\" \
           -k \
-          configure-product"
+          configure-product -n cf"
 
   if [[ ! -z ${cf_properties} ]]; then
-      om="${om} -n cf -p '${cf_properties}'"
+      om="${om} -p '${cf_properties}'"
   fi
 
   echo ${om} > /tmp/rqst_om_cmd.log
   exec_out=$(((eval $om | tee /tmp/rqst_om_stdout.log) 2>&1 1>&2 | tee /tmp/rqst_om_stderr.log) &>/dev/null)
 }
 
-om_stack_trace "$CF_AUTH_PROPERTIES"
+om_stack_trace "${CF_AUTH_PROPERTIES}"
 
 exit 1
 
