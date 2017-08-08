@@ -5,7 +5,7 @@
         "name": "{{MYSQL_SINGLETON_AZ}}"
       },
       "other_availability_zones": [
-        { "name": "{{AZ1}}" }
+        { "name": "{{MYSQL_SINGLETON_AZ}}" }
       ],
       "network": {
         "name": "{{MYSQL_NETWORK}}"
