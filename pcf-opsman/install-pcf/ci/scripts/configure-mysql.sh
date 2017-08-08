@@ -20,7 +20,6 @@ done
 sed -i -e "s|{{MYSQL_NETWORK}}|${MYSQL_NETWORK}|g" ${json_file}
 sed -i -e "s|{{MYSQL_SINGLETON_AZ}}|${MYSQL_SINGLETON_AZ}|g" ${json_file}
 sed -i -e "s|{{MYSQL_EMAIL}}|${MYSQL_EMAIL}|g" ${json_file}
-sed -i -e "s|{{MYSQL_SYSLOG_ADDRESS}}|${MYSQL_SYSLOG_ADDRESS}|g" ${json_file}
 
 function fn_om_linux_curl {
 
