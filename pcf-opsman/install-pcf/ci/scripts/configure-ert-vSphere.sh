@@ -122,7 +122,7 @@ fi
 function om_stack_trace {
   
   local om=${1}
-  local cf_properties=${2}
+  local cf_auth_properties=${2}
 
   om="om-alpine -t https://$OPSMAN_HOST \
           -u \"$OPSMAN_USER\" \
@@ -130,15 +130,15 @@ function om_stack_trace {
           -k \
           configure-product -n cf"
 
-  if [[ ! -z ${cf_properties} ]]; then
-      om="${om} -p '${cf_properties}'"
+  if [[ ! -z ${cf_auth_properties} ]]; then
+      om="${om} -p '${cf_auth_properties}'"
   fi
 
   echo ${om} > /tmp/rqst_om_cmd.log
   exec_out=$(((eval $om | tee /tmp/rqst_om_stdout.log) 2>&1 1>&2 | tee /tmp/rqst_om_stderr.log) &>/dev/null)
 }
 
-om_stack_trace "$CF_AUTH_PROPERTIES"
+om_stack_trace
 
 exit 1
 
