@@ -60,6 +60,9 @@ echo "Using self signed certificates generated using Ops Manager..."
 echo "\n$SSL_CERT\n"
 echo "\n$SSL_PRIVATE_KEY\n"
 
+echo "\n$ERT_SSL_CERT\n"
+echo "\n$ERT_SSL_KEY\n"
+
 echo "\n$SVCPROVIDER_SSL_CERT\n"
 echo "\n$SVCPROVIDER_SSL_KEY\n"
 
@@ -72,8 +75,8 @@ CF_AUTH_PROPERTIES=$(cat <<-EOF
   },
   ".uaa.service_provider_key_credentials": {
     "value": {
-      "cert_pem": "$SSL_CERT",
-      "private_key_pem": "$SSL_PRIVATE_KEY"
+      "cert_pem": "$SVCPROVIDER_SSL_CERT",
+      "private_key_pem": "$SVCPROVIDER_SSL_KEY"
     }
   },
   ".properties.uaa.ldap.url": {
