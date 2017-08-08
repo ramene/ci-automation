@@ -141,8 +141,6 @@ function om_stack_trace {
 
 om_stack_trace
 
-exit 1
-
 function fn_om_linux_curl {
 
     local curl_method=${1}
