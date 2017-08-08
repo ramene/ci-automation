@@ -16,7 +16,10 @@
     "properties": {
       ".properties.optional_protections.enable.recipient_email": {
           "value": "{{MYSQL_EMAIL}}"
-        }
+      },
+      ".properties.syslog.enabled.address": {
+          "value": "{{MYSQL_SYSLOG_ADDRESS}}"
+      }
     }
   },
   "jobs": {
