@@ -21,6 +21,9 @@ sed -i -e "s|{{MYSQL_NETWORK}}|${MYSQL_NETWORK}|g" ${json_file}
 sed -i -e "s|{{MYSQL_SINGLETON_AZ}}|${MYSQL_SINGLETON_AZ}|g" ${json_file}
 sed -i -e "s|{{MYSQL_EMAIL}}|${MYSQL_EMAIL}|g" ${json_file}
 sed -i -e "s|{{MYSQL_SYSLOG_ADDRESS}}|${MYSQL_SYSLOG_ADDRESS}|g" ${json_file}
+# APM
+sed -i -e "s|{{APM_ALERTS_EMAIL}}|${APM_ALERTS_EMAIL}|g" ${json_file}
+
 
 function fn_om_linux_curl {
 
@@ -53,7 +56,8 @@ echo "==========================================================================
 echo "Deploying MySql @ https://$OPSMAN_HOST ..."
 echo "=============================================================================================="
 # Get cf Product Guid
-guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "p-mysql") | .guid' | tr -d '"' | grep "p-mysql-.*")
+# guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "p-mysql") | .guid' | tr -d '"' | grep "p-mysql-.*")
+guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "apm") | .guid' | tr -d '"' | grep "apm.*")
 
 echo "=============================================================================================="
 echo "Found Mysql Deployment with guid of ${guid_mysql}"
