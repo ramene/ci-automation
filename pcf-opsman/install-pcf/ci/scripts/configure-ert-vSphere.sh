@@ -57,13 +57,13 @@ export SSL_PRIVATE_KEY=`echo $CERTIFICATES | jq '.key' | tr -d '"'`
 
 echo "Using self signed certificates generated using Ops Manager..."
 
-echo "\n$SSL_CERT\n"
-echo "\n$SSL_PRIVATE_KEY\n"
+#echo "\n$SSL_CERT\n"
+#echo "\n$SSL_PRIVATE_KEY\n"
 
-echo "\n$ERT_SSL_CERT\n"
+#echo "\n$ERT_SSL_CERT\n"
 
-echo "\n$SVCPROVIDER_SSL_CERT\n"
-echo "\n$SVCPROVIDER_SSL_KEY\n"
+#echo "\n$SVCPROVIDER_SSL_CERT\n"
+#echo "\n$SVCPROVIDER_SSL_KEY\n"
 
 if [[ "$authentication_mode" == "ldap" ]]; then
 echo "Configuring LDAP Authentication in ERT..."
@@ -118,6 +118,7 @@ EOF
 fi
 
 # $CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
+echo "hello world"
 
 function om_stack_trace {
   
