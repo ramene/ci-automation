@@ -120,10 +120,6 @@ fi
 # $CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
 echo "hello world"
 
-om_stack_trace "$CF_AUTH_PROPERTIES"
-
-exit 1
-
 
 function om_stack_trace {
   
@@ -143,6 +139,10 @@ function om_stack_trace {
   echo ${om} > /tmp/rqst_om_cmd.log
   exec_out=$(((eval $om | tee /tmp/rqst_om_stdout.log) 2>&1 1>&2 | tee /tmp/rqst_om_stderr.log) &>/dev/null)
 }
+
+om_stack_trace "$CF_AUTH_PROPERTIES"
+
+exit 1
 
 function fn_om_linux_curl {
 
