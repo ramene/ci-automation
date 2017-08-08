@@ -117,11 +117,11 @@ EOF
 
 fi
 
-$CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
+# $CMD -t https://$OPSMAN_HOST -u $OPSMAN_USER -p $OPSMAN_PASSWORD -k configure-product -n cf -p "$CF_AUTH_PROPERTIES"
 
 function om_stack_trace {
   
-  local om_linux=${1}
+  local om=${1}
   local cf_properties=${2}
 
   om="om-alpine -t https://$OPSMAN_HOST \
@@ -131,14 +131,14 @@ function om_stack_trace {
           -configure-product"
 
   if [[ ! -z ${cf_properties} ]]; then
-      om="${om} -n cf -p '${CF_AUTH_PROPERTIES}'"
+      om="${om} -n cf -p '${cf_properties}'"
   fi
 
-  echo ${om} > /tmp/rqst_cmd.log
-  exec_out=$(((eval $om | tee /tmp/rqst_stdout.log) 2>&1 1>&2 | tee /tmp/rqst_stderr.log) &>/dev/null)
+  echo ${om} > /tmp/rqst_om_cmd.log
+  exec_out=$(((eval $om | tee /tmp/rqst_om_stdout.log) 2>&1 1>&2 | tee /tmp/rqst_om_stderr.log) &>/dev/null)
 }
 
-om_stack_trace
+om_stack_trace "$CF_AUTH_PROPERTIES"
 
 function fn_om_linux_curl {
 
