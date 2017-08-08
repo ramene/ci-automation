@@ -138,7 +138,7 @@ function om_stack_trace {
   exec_out=$(((eval $om | tee /tmp/rqst_om_stdout.log) 2>&1 1>&2 | tee /tmp/rqst_om_stderr.log) &>/dev/null)
 }
 
-om_stack_trace "${CF_AUTH_PROPERTIES}"
+om_stack_trace "$CF_AUTH_PROPERTIES"
 
 exit 1
 
