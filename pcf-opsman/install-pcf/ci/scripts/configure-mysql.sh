@@ -53,8 +53,8 @@ echo "==========================================================================
 echo "Deploying MySql @ https://$OPSMAN_HOST ..."
 echo "=============================================================================================="
 # Get cf Product Guid
-# guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "p-mysql") | .guid' | tr -d '"' | grep "p-mysql-.*")
-guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "apm") | .guid' | tr -d '"' | grep "apm.*")
+guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "p-mysql") | .guid' | tr -d '"' | grep "p-mysql-.*")
+# guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "apm") | .guid' | tr -d '"' | grep "apm.*")
 
 echo "=============================================================================================="
 echo "Found Mysql Deployment with guid of ${guid_mysql}"
