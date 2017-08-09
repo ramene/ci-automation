@@ -6,9 +6,9 @@ cp /om-alpine /usr/local/bin
 CWD=$(pwd)
 
 # Set JSON Config Template and inster Concourse Parameter Values
-json_file_path="pcf-automation/pcf-opsman/install-pcf/product_configs/mysql"
-json_file_template="${json_file_path}/${MYSQL_TEMPLATE}"
-json_file="${json_file_path}/mysql.json"
+json_file_path="pcf-automation/pcf-opsman/install-pcf/product_configs/apm"
+json_file_template="${json_file_path}/${APM_TEMPLATE}"
+json_file="${json_file_path}/apm.json"
 
 cp ${json_file_template} ${json_file}
 
