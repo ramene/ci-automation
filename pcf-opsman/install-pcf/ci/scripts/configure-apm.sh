@@ -6,9 +6,9 @@ cp /om-alpine /usr/local/bin
 CWD=$(pwd)
 
 # Set JSON Config Template and inster Concourse Parameter Values
-json_file_path="pcf-automation/pcf-opsman/install-pcf/product_configs/apm"
-json_file_template="${json_file_path}/${APM_TEMPLATE}"
-json_file="${json_file_path}/apm.json"
+json_file_path="pcf-automation/pcf-opsman/install-pcf/product_configs/mysql"
+json_file_template="${json_file_path}/${MYSQL_TEMPLATE}"
+json_file="${json_file_path}/mysql.json"
 
 cp ${json_file_template} ${json_file}
 
@@ -17,9 +17,10 @@ for i in $(seq 1 $AZ_COUNT); do
   sed -i -e "s/{{$azString}}/${!azString}/g" ${json_file}
 done
 
-sed -i -e "s|{{APM_NETWORK}}|${APM_NETWORK}|g" ${json_file}
-sed -i -e "s|{{APM_SINGLETON_AZ}}|${APM_SINGLETON_AZ}|g" ${json_file}
-sed -i -e "s|{{APM_ALERTS_EMAIL}}|${APM_ALERTS_EMAIL}|g" ${json_file}
+sed -i -e "s|{{MYSQL_NETWORK}}|${MYSQL_NETWORK}|g" ${json_file}
+sed -i -e "s|{{MYSQL_SINGLETON_AZ}}|${MYSQL_SINGLETON_AZ}|g" ${json_file}
+sed -i -e "s|{{MYSQL_EMAIL}}|${MYSQL_EMAIL}|g" ${json_file}
+sed -i -e "s|{{MYSQL_SYSLOG_ADDRESS}}|${MYSQL_SYSLOG_ADDRESS}|g" ${json_file}
 
 function fn_om_linux_curl {
 
@@ -46,39 +47,42 @@ function fn_om_linux_curl {
     fi
 }
 
-echo "=============================================================================================="
-echo "Deploying APM @ https://$OPSMAN_HOST ..."
-echo "=============================================================================================="
-# Get cf Product Guid
-guid_rabbitmq=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "apm") | .guid' | tr -d '"' | grep "apm.*")
+
 
 echo "=============================================================================================="
-echo "Found APM Deployment with guid of ${guid_rabbitmq}"
+echo "Deploying MySql @ https://$OPSMAN_HOST ..."
+echo "=============================================================================================="
+# Get cf Product Guid
+# guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "p-mysql") | .guid' | tr -d '"' | grep "p-mysql-.*")
+guid_mysql=$(fn_om_linux_curl "GET" "/api/v0/staged/products" | jq '.[] | select(.type == "apm") | .guid' | tr -d '"' | grep "apm.*")
+
+echo "=============================================================================================="
+echo "Found Mysql Deployment with guid of ${guid_mysql}"
 echo "=============================================================================================="
 
 # Set Networks & AZs
 echo "=============================================================================================="
-echo "Setting Availability Zones & Networks for: ${guid_rabbitmq}"
+echo "Setting Availability Zones & Networks for: ${guid_mysql}"
 echo "=============================================================================================="
 
 
 json_net_and_az=$(cat ${json_file} | jq .networks_and_azs)
-fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_rabbitmq}/networks_and_azs" "${json_net_and_az}"
+fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_mysql}/networks_and_azs" "${json_net_and_az}"
 
-# Set RabbitMQ Properties
+# Set MySql Properties
 echo "=============================================================================================="
-echo "Setting Properties for: ${guid_rabbitmq}"
+echo "Setting Properties for: ${guid_mysql}"
 echo "=============================================================================================="
 
 json_properties=$(cat ${json_file} | jq .properties)
-fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_rabbitmq}/properties" "${json_properties}"
+fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_mysql}/properties" "${json_properties}"
 
 # Set Resource Configs
 echo "=============================================================================================="
-echo "Setting Resource Job Properties for: ${guid_rabbitmq}"
+echo "Setting Resource Job Properties for: ${guid_mysql}"
 echo "=============================================================================================="
 json_jobs_configs=$(cat ${json_file} | jq .jobs )
-json_job_guids=$(fn_om_linux_curl "GET" "/api/v0/staged/products/${guid_rabbitmq}/jobs" | jq .)
+json_job_guids=$(fn_om_linux_curl "GET" "/api/v0/staged/products/${guid_mysql}/jobs" | jq .)
 
 for job in $(echo ${json_jobs_configs} | jq . | jq 'keys' | jq .[] | tr -d '"'); do
   json_job_guid_cmd="echo \${json_job_guids} | jq '.jobs[] | select(.name == \"${job}\") | .guid' | tr -d '\"'"
@@ -87,5 +91,5 @@ for job in $(echo ${json_jobs_configs} | jq . | jq 'keys' | jq .[] | tr -d '"');
   json_job_config=$(eval ${json_job_config_cmd})
   echo "Configuring $job ---------------------------------------------------------------------------------------------"
   echo "Setting ${json_job_guid} with --data=${json_job_config}..."
-  fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_rabbitmq}/jobs/${json_job_guid}/resource_config" "${json_job_config}"
+  fn_om_linux_curl "PUT" "/api/v0/staged/products/${guid_mysql}/jobs/${json_job_guid}/resource_config" "${json_job_config}"
 done
